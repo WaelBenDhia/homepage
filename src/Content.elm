@@ -12,30 +12,54 @@ import List exposing (..)
 content : String -> Float -> Html msg
 content contentText interp =
     let
-        newLen s =
-            Basics.round <| (Basics.toFloat <| String.length s) * interp
+        newLen =
+            String.length >> Basics.toFloat >> (*) interp >> Basics.round
 
         resize s =
             slice 0 (newLen s) s
     in
-        div [ css contentStyle ] <| splitParagraphs <| resize contentText
+        div [ css containerStyle ]
+            [ div [ css gradientStyle ] []
+            , div [ css contentStyle ] (splitParagraphs <| resize contentText)
+            ]
+
+
+gradientStyle : List Style
+gradientStyle =
+    [ position absolute
+    , backgroundImage <|
+        linearGradient
+            (stop <| hex "#000")
+            (stop <| rgba 0 0 0 0)
+            []
+    , width <| pct 100
+    , height <| px 64
+    ]
+
+
+containerStyle : List Style
+containerStyle =
+    [ position absolute
+    , Css.left <| pct 25
+    , top <| pct 25
+    , width <| pct 60
+    , height <| pct 75
+    , property "mix-blend-mode" "lighten"
+    ]
 
 
 contentStyle : List Style
 contentStyle =
-    [ position absolute
-    , Css.left (pct 25)
-    , top (pct 25)
-    , width (pct 60)
-    , height (pct 75)
-    , color colors.fg
+    [ color colors.fg
     , overflowY scroll
+    , width <| pct 100
+    , height <| pct 100
     ]
 
 
 splitParagraphs : String -> List (Html msg)
-splitParagraphs contentText =
-    List.map paragraph <| lines contentText
+splitParagraphs =
+    lines >> List.map paragraph >> (::) (div [ css [ height <| px 32 ] ] [])
 
 
 firstLetterStyle : Float -> List Style

@@ -16,4 +16,4 @@ type alias Model =
 
 init : Location -> ( Model, Cmd msg )
 init location =
-    ( Model (parseLocation location) 0.2 (animation 0) 0, Cmd.none )
+    ( Model (parseLocation location) 0.2 (animation 0) 1, Cmd.none )

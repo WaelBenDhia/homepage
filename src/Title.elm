@@ -42,8 +42,8 @@ zip xs ys =
 title : Route -> Float -> List (Html msg)
 title route interpolator =
     let
-        newLen s =
-            Basics.round <| (Basics.toFloat <| String.length s) * interpolator
+        newLen =
+            String.length >> Basics.toFloat >> (*) interpolator >> Basics.round
 
         resize s =
             slice 0 (newLen s) s
@@ -53,14 +53,16 @@ title route interpolator =
     in
         List.map
             (\( t, style, cStyle ) ->
-                t
-                    |> resize
-                    |> String.words
-                    |> intersperse " "
-                    |> List.map (\x -> span [ css style ] [ text x ])
-                    |> div [ css cStyle ]
+                if String.length t > 0 then
+                    t
+                        |> String.words
+                        |> intersperse " "
+                        |> List.map (\x -> span [ css style ] [ text x ])
+                        |> div [ css cStyle ]
+                else
+                    div [] []
             )
-            [ ( titleEn, titleStyle, titleContainerStyle ), ( titleAr, decoStyle, decoContainerStyle ) ]
+            [ ( resize titleEn, titleStyle, titleContainerStyle ), ( resize titleAr, decoStyle, decoContainerStyle ) ]
 
 
 styleBase : FontSize a -> String -> List Style

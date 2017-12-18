@@ -21,11 +21,8 @@ fonts =
 fontLink : String
 fontLink =
     let
-        replace org rep tar =
-            split org tar |> join rep
-
         format =
-            replace " " "+"
+            split " " >> join "+"
     in
         concat
             [ "@import url('https://fonts.googleapis.com/css?family="

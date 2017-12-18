@@ -6,13 +6,11 @@ import Title exposing (title)
 import Fonts exposing (..)
 import Content exposing (content)
 import Routing exposing (..)
-import Html
 import Html.Styled exposing (..)
 import Html.Styled.Attributes as Attr exposing (css, type_, src, href)
 import Css exposing (fontFamilies, backgroundColor, hex, width, height, pct)
 import String exposing (..)
-import Navigation exposing (Location)
-import UrlParser exposing (..)
+import Navigation exposing (..)
 import AnimationFrame exposing (..)
 import Time exposing (Time, second)
 import Mouse exposing (..)
@@ -52,28 +50,27 @@ update msg model =
                         openAnim model.clock
                     else
                         model.currentAnimation
-                , route =
-                    if model.interp == 0 then
-                        (case model.route of
-                            Home ->
-                                Work
-
-                            Work ->
-                                Education
-
-                            Education ->
-                                Skills
-
-                            Skills ->
-                                NotFound
-
-                            NotFound ->
-                                Home
-                        )
-                    else
-                        model.route
               }
-            , Cmd.none
+            , if model.interp == 0 then
+                newUrl
+                    (case model.route of
+                        Home ->
+                            "/#/work"
+
+                        Work ->
+                            "/#/education"
+
+                        Education ->
+                            "/#/skills"
+
+                        Skills ->
+                            "/#/asdasd"
+
+                        NotFound ->
+                            "/#/"
+                    )
+              else
+                Cmd.none
             )
 
         MouseClick _ ->
@@ -88,27 +85,19 @@ update msg model =
             )
 
 
-modulo : Float -> Float -> Float
-modulo a b =
-    if a >= b then
-        modulo (a - b) b
-    else
-        a
-
-
 
 ---- VIEW ----
 
 
 view : Model -> Html Msg
-view model =
+view { route, interp } =
     div
         [ css mainStyle ]
     <|
         List.concat
             [ [ importNode ]
-            , Title.title model.route model.interp
-            , [ Content.content ipsum model.interp ]
+            , Title.title route interp
+            , [ Content.content ipsum interp ]
             ]
 
 
@@ -116,12 +105,19 @@ view model =
 ---- PROGRAM ----
 
 
-closeAnim time =
-    animation time |> from 1 |> to 0 |> duration (1 * second)
+simpleAnim : Float -> Float -> Time -> Animation
+simpleAnim start end =
+    animation >> from start >> to end >> duration (0.4 * second)
 
 
-openAnim time =
-    animation time |> from 0 |> to 1 |> duration (1 * second)
+closeAnim : Time -> Animation
+closeAnim =
+    simpleAnim 1 0
+
+
+openAnim : Time -> Animation
+openAnim =
+    simpleAnim 0 1
 
 
 subs : Sub Msg

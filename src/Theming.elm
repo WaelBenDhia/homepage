@@ -14,8 +14,4 @@ colors =
 
 colorsStr : { bg : String, fg : String, primary : String, accent : String }
 colorsStr =
-    { primary = "#ff0"
-    , bg = "#000"
-    , fg = "#fff"
-    , accent = "#400"
-    }
+    { primary = "#ff0", bg = "#000", fg = "#fff", accent = "#f00" }
