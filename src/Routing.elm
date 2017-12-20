@@ -12,6 +12,24 @@ type Route
     | NotFound
 
 
+routeToString r =
+    case r of
+        Home ->
+            "/#/"
+
+        Education ->
+            "/#/education"
+
+        Work ->
+            "/#/work"
+
+        Skills ->
+            "/#/skills"
+
+        _ ->
+            "/#/nowhere"
+
+
 parseLocation : Location -> Route
 parseLocation location =
     let

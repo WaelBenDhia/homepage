@@ -14,16 +14,16 @@ pageTitle : Route -> ( String, String )
 pageTitle route =
     case route of
         Home ->
-            ( "Wael Ben Dhia", "وائِلْ بِنْ ضِياءْ" )
+            ( "Wael Ben Dhia", "وَائِلْ بِنْ ضِياءْ" )
 
         Education ->
-            ( "Education", "تَعْليم" )
+            ( "Education", "تَعْليمْ" )
 
         Work ->
-            ( "Work", "عَمَل" )
+            ( "Work", "عَمَلْ" )
 
         Skills ->
-            ( "Skills", "مَهارات" )
+            ( "Skills", "مَهَارَاتْ" )
 
         NotFound ->
             ( "404", "٤٠٤" )
@@ -87,16 +87,19 @@ decoContainerStyle =
     ]
 
 
+textShadow : Int -> String -> String
 textShadow shadowWidth color =
     let
         interval =
             List.range -shadowWidth shadowWidth
 
+        len =
+            List.length interval
+
         allPairs =
-            List.filter (\( x, y ) -> x /= 0 || y /= 0) <|
-                zip
-                    (List.concat <| List.repeat (List.length interval) interval)
-                    (List.concatMap (List.repeat <| List.length interval) interval)
+            zip
+                (interval |> List.repeat len |> List.concat)
+                (interval |> List.concatMap (List.repeat len))
 
         colored =
             List.map
@@ -126,6 +129,7 @@ titleContainerStyle =
     , Css.left <| pct 12.5
     , top <| pct 12.5
     , zIndex <| int 1
+    , property "mix-blend-mode" "lighten"
     ]
 
 

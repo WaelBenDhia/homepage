@@ -1,5 +1,7 @@
 module Main exposing (..)
 
+import NavMenu exposing (..)
+import Messages exposing (..)
 import Model exposing (..)
 import Theming exposing (..)
 import Title exposing (title)
@@ -13,7 +15,6 @@ import String exposing (..)
 import Navigation exposing (..)
 import AnimationFrame exposing (..)
 import Time exposing (Time, second)
-import Mouse exposing (..)
 import Animation exposing (..)
 
 
@@ -29,53 +30,13 @@ mainStyle =
 ---- UPDATE ----
 
 
-type Msg
-    = OnLocationChange Location
-    | Tick Time
-    | MouseClick Position
-
-
 update : Msg -> Model -> ( Model, Cmd Msg )
 update msg model =
     case msg of
         OnLocationChange location ->
-            ( { model | route = parseLocation <| location }, Cmd.none )
-
-        Tick dt ->
             ( { model
-                | clock = model.clock + dt
-                , interp = animate model.clock model.currentAnimation
+                | target = parseLocation <| location
                 , currentAnimation =
-                    if model.interp == 0 then
-                        openAnim model.clock
-                    else
-                        model.currentAnimation
-              }
-            , if model.interp == 0 then
-                newUrl
-                    (case model.route of
-                        Home ->
-                            "/#/work"
-
-                        Work ->
-                            "/#/education"
-
-                        Education ->
-                            "/#/skills"
-
-                        Skills ->
-                            "/#/asdasd"
-
-                        NotFound ->
-                            "/#/"
-                    )
-              else
-                Cmd.none
-            )
-
-        MouseClick _ ->
-            ( { model
-                | currentAnimation =
                     if model.interp == 1 then
                         closeAnim model.clock
                     else
@@ -83,6 +44,30 @@ update msg model =
               }
             , Cmd.none
             )
+
+        Tick dt ->
+            ( { model
+                | clock = model.clock + dt
+                , interp = animate model.clock model.currentAnimation
+                , route =
+                    if model.interp == 0 then
+                        model.target
+                    else
+                        model.route
+                , currentAnimation =
+                    if model.interp == 0 then
+                        openAnim model.clock
+                    else
+                        model.currentAnimation
+              }
+            , if model.interp == 0 then
+                newUrl <| routeToString model.target
+              else
+                Cmd.none
+            )
+
+        GoTo r ->
+            ( model, newUrl <| routeToString r )
 
 
 
@@ -95,7 +80,8 @@ view { route, interp } =
         [ css mainStyle ]
     <|
         List.concat
-            [ [ importNode ]
+            [ NavMenu.menu
+            , [ importNode ]
             , Title.title route interp
             , [ Content.content ipsum interp ]
             ]
@@ -124,7 +110,6 @@ subs : Sub Msg
 subs =
     Sub.batch
         [ AnimationFrame.diffs Tick
-        , Mouse.clicks MouseClick
         ]
 
 
