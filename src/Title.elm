@@ -17,7 +17,7 @@ pageTitle route =
             ( "Wael Ben Dhia", "وَائِلْ بِنْ ضِياءْ" )
 
         Education ->
-            ( "Education", "تَعْليمْ" )
+            ( "Education", "تَعْلِيمْ" )
 
         Work ->
             ( "Work", "عَمَلْ" )
@@ -39,11 +39,11 @@ zip xs ys =
             []
 
 
-title : Route -> Float -> List (Html msg)
-title route interpolator =
+title : { a | interp : Float, route : Route } -> List (Html msg)
+title { route, interp } =
     let
         newLen =
-            String.length >> Basics.toFloat >> (*) interpolator >> Basics.round
+            String.length >> Basics.toFloat >> (*) interp >> Basics.round
 
         resize s =
             slice 0 (newLen s) s
@@ -62,7 +62,9 @@ title route interpolator =
                 else
                     div [] []
             )
-            [ ( resize titleEn, titleStyle, titleContainerStyle ), ( resize titleAr, decoStyle, decoContainerStyle ) ]
+            [ ( resize titleEn, titleStyle, titleContainerStyle )
+            , ( resize titleAr, decoStyle, decoContainerStyle )
+            ]
 
 
 styleBase : FontSize a -> String -> List Style

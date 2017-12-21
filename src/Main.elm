@@ -16,8 +16,10 @@ import Navigation exposing (..)
 import AnimationFrame exposing (..)
 import Time exposing (Time, second)
 import Animation exposing (..)
+import Maybe exposing (andThen)
 
 
+mainStyle : List Css.Style
 mainStyle =
     [ fontFamilies [ fonts.body ]
     , backgroundColor colors.bg
@@ -30,18 +32,16 @@ mainStyle =
 ---- UPDATE ----
 
 
+doneClosing : { a | clock : Time, currentAnimation : Animation } -> Bool
+doneClosing { clock, currentAnimation } =
+    getTo currentAnimation == 0 && isDone clock currentAnimation
+
+
 update : Msg -> Model -> ( Model, Cmd Msg )
 update msg model =
     case msg of
         OnLocationChange location ->
-            ( { model
-                | target = parseLocation <| location
-                , currentAnimation =
-                    if model.interp == 1 then
-                        closeAnim model.clock
-                    else
-                        model.currentAnimation
-              }
+            ( { model | target = Just <| parseLocation location }
             , Cmd.none
             )
 
@@ -50,24 +50,40 @@ update msg model =
                 | clock = model.clock + dt
                 , interp = animate model.clock model.currentAnimation
                 , route =
-                    if model.interp == 0 then
-                        model.target
+                    if doneClosing model then
+                        case model.target of
+                            Just r ->
+                                r
+
+                            Nothing ->
+                                model.route
                     else
                         model.route
+                , target =
+                    if doneClosing model then
+                        Nothing
+                    else
+                        model.target
                 , currentAnimation =
-                    if model.interp == 0 then
+                    if isRunning model.clock model.currentAnimation then
+                        model.currentAnimation
+                    else if doneClosing model then
                         openAnim model.clock
+                    else if model.target /= Nothing then
+                        closeAnim model.clock
                     else
                         model.currentAnimation
               }
-            , if model.interp == 0 then
-                newUrl <| routeToString model.target
-              else
-                Cmd.none
+            , Cmd.none
             )
 
         GoTo r ->
-            ( model, newUrl <| routeToString r )
+            ( model
+            , if (r /= model.route) && (Just r /= model.target) then
+                newUrl <| routeToString r
+              else
+                Cmd.none
+            )
 
 
 
@@ -75,15 +91,14 @@ update msg model =
 
 
 view : Model -> Html Msg
-view { route, interp } =
+view model =
     div
         [ css mainStyle ]
     <|
         List.concat
-            [ NavMenu.menu
-            , [ importNode ]
-            , Title.title route interp
-            , [ Content.content ipsum interp ]
+            [ [ importNode, NavMenu.navMenu model ]
+            , Title.title model
+            , [ Content.content model ]
             ]
 
 
@@ -108,9 +123,7 @@ openAnim =
 
 subs : Sub Msg
 subs =
-    Sub.batch
-        [ AnimationFrame.diffs Tick
-        ]
+    Sub.batch [ AnimationFrame.diffs Tick ]
 
 
 main : Program Never Model Msg

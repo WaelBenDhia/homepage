@@ -29,7 +29,7 @@ fontLink =
             , format fonts.body
             , ":300,400|"
             , format fonts.heading
-            , ":400,700,900|"
+            , ":400|"
             , format fonts.arabic
             , "&subset=arabic');"
             ]

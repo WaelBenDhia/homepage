@@ -7,10 +7,11 @@ import Html.Styled.Attributes exposing (class, css, type_)
 import Css exposing (..)
 import String exposing (..)
 import List exposing (..)
+import Routing exposing (..)
 
 
-content : String -> Float -> Html msg
-content contentText interp =
+content : { a | interp : Float, route : Route } -> Html msg
+content { route, interp } =
     let
         newLen =
             String.length >> Basics.toFloat >> (*) interp >> Basics.round
@@ -20,8 +21,27 @@ content contentText interp =
     in
         div [ css containerStyle ]
             [ div [ css gradientStyle ] []
-            , div [ css contentStyle ] (splitParagraphs <| resize contentText)
+            , div [ css contentStyle ] (splitParagraphs <| resize <| contentText route)
             ]
+
+
+contentText : Route -> String
+contentText route =
+    case route of
+        Home ->
+            "This is the home page.\nWrite stuff here about yourself"
+
+        Education ->
+            "Write stuff here about your education.\nLike where you learned and shit."
+
+        Work ->
+            "Work.\nYour work experience"
+
+        Skills ->
+            "Things you can do."
+
+        NotFound ->
+            "You seem to be lost little lamb."
 
 
 gradientStyle : List Style
@@ -50,11 +70,7 @@ containerStyle =
 
 contentStyle : List Style
 contentStyle =
-    [ color colors.fg
-    , overflowY scroll
-    , width <| pct 100
-    , height <| pct 100
-    ]
+    [ color colors.fg, width <| pct 100, height <| pct 100 ]
 
 
 splitParagraphs : String -> List (Html msg)

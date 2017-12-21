@@ -11,7 +11,7 @@ type alias Model =
     , interp : Float
     , currentAnimation : Animation
     , clock : Time
-    , target : Route
+    , target : Maybe Route
     }
 
 
@@ -21,4 +21,4 @@ init location =
         page =
             parseLocation location
     in
-        ( Model page 0.2 (animation 0) 1 page, Cmd.none )
+        ( Model page 0.2 (animation 0) 1 Nothing, Cmd.none )
