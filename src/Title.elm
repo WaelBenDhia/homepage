@@ -8,12 +8,14 @@ import Html.Styled.Attributes exposing (class, css, type_)
 import Css exposing (..)
 import String exposing (..)
 import List exposing (..)
+import Guards exposing (..)
+import Model exposing (Mdl)
 
 
 pageTitle : Route -> ( String, String )
 pageTitle route =
     case route of
-        Home ->
+        About ->
             ( "Wael Ben Dhia", "وَائِلْ بِنْ ضِياءْ" )
 
         Education ->
@@ -39,7 +41,7 @@ zip xs ys =
             []
 
 
-title : { a | interp : Float, route : Route } -> List (Html msg)
+title : Mdl -> List (Html msg)
 title { route, interp } =
     let
         newLen =
@@ -53,14 +55,14 @@ title { route, interp } =
     in
         List.map
             (\( t, style, cStyle ) ->
-                if String.length t > 0 then
-                    t
-                        |> String.words
-                        |> intersperse " "
-                        |> List.map (\x -> span [ css style ] [ text x ])
-                        |> div [ css cStyle ]
-                else
-                    div [] []
+                (String.length t > 0)
+                    => (t
+                            |> String.words
+                            |> intersperse " "
+                            |> List.map (\x -> span [ css style ] [ text x ])
+                            |> div [ css cStyle ]
+                       )
+                    |= div [] []
             )
             [ ( resize titleEn, titleStyle, titleContainerStyle )
             , ( resize titleAr, decoStyle, decoContainerStyle )
@@ -133,16 +135,3 @@ titleContainerStyle =
     , zIndex <| int 1
     , property "mix-blend-mode" "lighten"
     ]
-
-
-
--- , after
--- [ property "content" "''"
--- , position absolute
--- , width <| pct 100
--- , height <| px 4
--- , backgroundColor colors.primary
--- , Css.left <| px 0
--- , bottom <| px 14
--- , zIndex <| int -1
--- ]

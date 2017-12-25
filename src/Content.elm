@@ -8,9 +8,10 @@ import Css exposing (..)
 import String exposing (..)
 import List exposing (..)
 import Routing exposing (..)
+import Model exposing (Mdl)
 
 
-content : { a | interp : Float, route : Route } -> Html msg
+content : Mdl -> Html msg
 content { route, interp } =
     let
         newLen =
@@ -18,24 +19,44 @@ content { route, interp } =
 
         resize s =
             slice 0 (newLen s) s
+
+        paragraphs =
+            route |> contentText |> resize |> splitParagraphs
     in
         div [ css containerStyle ]
             [ div [ css gradientStyle ] []
-            , div [ css contentStyle ] (splitParagraphs <| resize <| contentText route)
+            , div [ css contentStyle ] paragraphs
             ]
 
 
 contentText : Route -> String
 contentText route =
     case route of
-        Home ->
+        About ->
             "This is the home page.\nWrite stuff here about yourself"
 
         Education ->
             "Write stuff here about your education.\nLike where you learned and shit."
 
         Work ->
-            "Work.\nYour work experience"
+            String.join "\n"
+                [ "Work.\nYour work experience"
+                , "Work.\nYour work experience"
+                , "Work.\nYour work experience"
+                , "Work.\nYour work experience"
+                , "Work.\nYour work experience"
+                , "Work.\nYour work experience"
+                , "Work.\nYour work experience"
+                , "Work.\nYour work experience"
+                , "Work.\nYour work experience"
+                , "Work.\nYour work experience"
+                , "Work.\nYour work experience"
+                , "Work.\nYour work experience"
+                , "Work.\nYour work experience"
+                , "Work.\nYour work experience"
+                , "Work.\nYour work experience"
+                , "Work.\nYour work experience"
+                ]
 
         Skills ->
             "Things you can do."
@@ -46,31 +67,45 @@ contentText route =
 
 gradientStyle : List Style
 gradientStyle =
-    [ position absolute
+    [ position fixed
     , backgroundImage <|
         linearGradient
             (stop <| hex "#000")
             (stop <| rgba 0 0 0 0)
             []
-    , width <| pct 100
+    , width <| vw 60
     , height <| px 64
-    ]
-
-
-containerStyle : List Style
-containerStyle =
-    [ position absolute
-    , Css.left <| pct 25
-    , top <| pct 25
-    , width <| pct 60
-    , height <| pct 75
-    , property "mix-blend-mode" "lighten"
+    , Css.left <| vw 25
+    , after
+        [ property "content" "''"
+        , position fixed
+        , backgroundColor <| hex "#000"
+        , width <| vw 60
+        , Css.left <| vw 25
+        , height <| vh 30
+        , top <| px 0
+        ]
     ]
 
 
 contentStyle : List Style
 contentStyle =
     [ color colors.fg, width <| pct 100, height <| pct 100 ]
+
+
+containerStyle : List Style
+containerStyle =
+    [ position absolute
+    , Css.left <| px 0
+    , top <| px 0
+    , width <| pct 60
+    , height <| vh 70
+    , paddingLeft <| pct 25
+    , paddingRight <| pct 15
+    , paddingTop <| vh 30
+    , overflow <| auto
+    , property "mix-blend-mode" "lighten"
+    ]
 
 
 splitParagraphs : String -> List (Html msg)

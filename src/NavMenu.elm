@@ -10,9 +10,11 @@ import Routing exposing (..)
 import List exposing (..)
 import Theming exposing (..)
 import String exposing (slice)
+import Guards exposing (..)
+import Model exposing (Mdl)
 
 
-navMenu : { a | interp : Float, route : Route, target : Maybe Route } -> Html Msg
+navMenu : Mdl -> Html Msg
 navMenu { route, target, interp } =
     let
         newLen =
@@ -28,10 +30,7 @@ navMenu { route, target, interp } =
             slice (newLenInverted s) (String.length s) s
 
         setSelected r =
-            if route == r then
-                buttonStyleSelected
-            else
-                buttonStyleUnselected
+            route == r => buttonStyleSelected |= buttonStyleUnselected
     in
         div
             [ css
@@ -41,6 +40,7 @@ navMenu { route, target, interp } =
                 , position absolute
                 , left <| px 0
                 , bottom <| px 0
+                , zIndex <| int 1
                 ]
             ]
         <|
@@ -52,22 +52,19 @@ navMenu { route, target, interp } =
                         , onClick <| GoTo r
                         ]
                         [ text <|
-                            (if r == route then
-                                resizeInvert t
-                             else if Just r == target then
-                                resize t
-                             else
-                                t
-                            )
+                            (r == route => resizeInvert t)
+                                |= (Just r == target => resize t)
+                                |= t
                         ]
                 )
-                [ ( Home, "Home", 82 )
+                [ ( About, "About", 82 )
                 , ( Education, "Education", 139 )
                 , ( Work, "Work", 82 )
                 , ( Skills, "Skills", 70 )
                 ]
 
 
+buttonStyle : List Style
 buttonStyle =
     [ display inlineBlock
     , position relative
@@ -80,14 +77,11 @@ buttonStyle =
     ]
 
 
+buttonStyleSelected : List Style
 buttonStyleSelected =
-    [ color colors.bg
-    , backgroundColor colors.primary
-    ]
+    [ color colors.bg, backgroundColor colors.primary ]
 
 
+buttonStyleUnselected : List Style
 buttonStyleUnselected =
-    [ color colors.fg
-    , cursor pointer
-    , hover [ color colors.primary ]
-    ]
+    [ color colors.fg, cursor pointer, hover [ color colors.primary ] ]
