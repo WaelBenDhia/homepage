@@ -8,27 +8,30 @@ import Css exposing (..)
 import Fonts exposing (..)
 import Theming exposing (colors)
 import NavMenu exposing (navMenu)
-import Pointer exposing (pointer)
 import Title exposing (title)
 import Content exposing (content)
+import Pointer exposing (..)
 
 
-mainStyle : List Style
-mainStyle =
+mainStyle : Mdl -> List Style
+mainStyle { route, interp } =
     [ fontFamilies [ fonts.body ]
-    , backgroundColor colors.bg
-    , width <| pct 100
+    , backgroundColor (colors route).bg
+    , width <| calc (pct 100) minus (px <| 16 * interp)
     , height <| pct 100
+    , borderLeft3 (px <| 16 * interp) solid (colors route).primary
     ]
 
 
 view : Mdl -> Html Msg
-view model =
+view ({ route, interp } as model) =
     div
-        [ css mainStyle ]
+        [ css <| mainStyle model ]
     <|
-        List.concat
-            [ [ Pointer.pointer model, importNode, navMenu model ]
-            , title model
-            , [ Content.content model ]
-            ]
+        [ Pointer.pointer model, importNode, navMenu model ]
+            ++ title model
+            ++ [ Content.content model ]
+
+
+
+--div [ css [ position absolute, backgroundColor <| hex "#0f0", width <| pct 100, height <| pct <| 100 * interp ] ] [],

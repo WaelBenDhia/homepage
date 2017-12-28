@@ -9,6 +9,8 @@ import String exposing (..)
 import List exposing (..)
 import Routing exposing (..)
 import Model exposing (Mdl)
+import Theming exposing (..)
+import Guards exposing (..)
 
 
 content : Mdl -> Html msg
@@ -21,11 +23,11 @@ content { route, interp } =
             slice 0 (newLen s) s
 
         paragraphs =
-            route |> contentText |> resize |> splitParagraphs
+            route |> contentText |> resize |> splitParagraphs route
     in
-        div [ css containerStyle ]
-            [ div [ css gradientStyle ] []
-            , div [ css contentStyle ] paragraphs
+        div [ css <| containerStyle route ]
+            [ div [ css <| gradientStyle route ] []
+            , div [ css <| contentStyle route ] paragraphs
             ]
 
 
@@ -65,12 +67,12 @@ contentText route =
             "You seem to be lost little lamb."
 
 
-gradientStyle : List Style
-gradientStyle =
+gradientStyle : Route -> List Style
+gradientStyle r =
     [ position fixed
     , backgroundImage <|
         linearGradient
-            (stop <| hex "#000")
+            (stop (colors r).bg)
             (stop <| rgba 0 0 0 0)
             []
     , width <| vw 60
@@ -79,7 +81,7 @@ gradientStyle =
     , after
         [ property "content" "''"
         , position fixed
-        , backgroundColor <| hex "#000"
+        , backgroundColor (colors r).bg
         , width <| vw 60
         , Css.left <| vw 25
         , height <| vh 30
@@ -88,13 +90,13 @@ gradientStyle =
     ]
 
 
-contentStyle : List Style
-contentStyle =
-    [ color colors.fg, width <| pct 100, height <| pct 100 ]
+contentStyle : Route -> List Style
+contentStyle r =
+    [ color (colors r).fg, width <| pct 100, height <| pct 100 ]
 
 
-containerStyle : List Style
-containerStyle =
+containerStyle : Route -> List Style
+containerStyle r =
     [ position absolute
     , Css.left <| px 0
     , top <| px 0
@@ -104,36 +106,37 @@ containerStyle =
     , paddingRight <| pct 15
     , paddingTop <| vh 30
     , overflow <| auto
-    , property "mix-blend-mode" "lighten"
+    , property "mix-blend-mode"
+        ((lightness (colorsStr r).bg < 128) => "lighten" |= "darken")
     ]
 
 
-splitParagraphs : String -> List (Html msg)
-splitParagraphs =
-    lines >> List.map paragraph >> (::) (div [ css [ height <| px 32 ] ] [])
+splitParagraphs : Route -> String -> List (Html msg)
+splitParagraphs r =
+    lines >> List.map (paragraph r) >> (::) (div [ css [ height <| px 32 ] ] [])
 
 
-firstLetterStyle : Float -> List Style
-firstLetterStyle size =
+firstLetterStyle : Route -> Float -> List Style
+firstLetterStyle r size =
     [ fontSize <| px (1.8 * size)
     , padding <| px 4
     , paddingBottom <| px 0
     , fontFamilies [ fonts.heading ]
     , fontWeight <| int 700
-    , color colors.bg
-    , backgroundColor colors.primary
+    , color (colors r).bg
+    , backgroundColor (colors r).primary
     , width <| px 16
     ]
 
 
-paragraph : String -> Html msg
-paragraph thing =
+paragraph : Route -> String -> Html msg
+paragraph r thing =
     case toList thing of
         l :: rest ->
             p
                 [ css [ fontSize <| px 22, lineHeight <| px 32 ] ]
                 [ span
-                    [ css <| firstLetterStyle 22 ]
+                    [ css <| firstLetterStyle r 22 ]
                     [ text <| fromChar l ]
                 , text <| fromList rest
                 ]

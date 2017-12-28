@@ -64,8 +64,8 @@ title { route, interp } =
                        )
                     |= div [] []
             )
-            [ ( resize titleEn, titleStyle, titleContainerStyle )
-            , ( resize titleAr, decoStyle, decoContainerStyle )
+            [ ( resize titleEn, titleStyle route, titleContainerStyle route )
+            , ( resize titleAr, decoStyle route, decoContainerStyle )
             ]
 
 
@@ -77,9 +77,9 @@ styleBase size font =
     ]
 
 
-decoStyle : List Style
-decoStyle =
-    (styleBase (vw 16) fonts.arabic) ++ [ color colors.accent ]
+decoStyle : Route -> List Style
+decoStyle r =
+    (styleBase (vw 16) fonts.arabic) ++ [ color (colors r).accent ]
 
 
 decoContainerStyle : List Style
@@ -115,23 +115,24 @@ textShadow shadowWidth color =
         String.join ", " colored
 
 
-titleStyle : List Style
-titleStyle =
+titleStyle : Route -> List Style
+titleStyle r =
     (++)
         (styleBase (px 80) fonts.heading)
-        [ color colors.bg
+        [ color (colors r).bg
         , zIndex <| int 1
-        , backgroundColor colors.primary
+        , backgroundColor (colors r).primary
         , padding <| px 8
         , paddingBottom <| px 0
         ]
 
 
-titleContainerStyle : List Style
-titleContainerStyle =
+titleContainerStyle : Route -> List Style
+titleContainerStyle r =
     [ position absolute
     , Css.left <| pct 12.5
     , top <| pct 12.5
     , zIndex <| int 1
-    , property "mix-blend-mode" "lighten"
+    , property "mix-blend-mode"
+        ((lightness (colorsStr r).bg < 128) => "lighten" |= "darken")
     ]

@@ -22,4 +22,12 @@ init location =
         page =
             parseLocation location
     in
-        ( Mdl page 0.2 (animation 0) 1 Nothing { x = -100, y = -100 }, Cmd.none )
+        ( Mdl
+            page
+            0.2
+            (animation 0)
+            1
+            Nothing
+            { x = -100, y = -100 }
+        , Cmd.none
+        )

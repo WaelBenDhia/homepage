@@ -30,7 +30,7 @@ navMenu { route, target, interp } =
             slice (newLenInverted s) (String.length s) s
 
         setSelected r =
-            route == r => buttonStyleSelected |= buttonStyleUnselected
+            (route == r => buttonStyleSelected |= buttonStyleUnselected) route
     in
         div
             [ css
@@ -38,8 +38,8 @@ navMenu { route, target, interp } =
                 , flexDirection column
                 , alignItems flexStart
                 , position absolute
-                , left <| px 0
-                , bottom <| px 0
+                , left <| px <| 15 * interp
+                , bottom <| calc (vh 50) minus (px 224)
                 , zIndex <| int 1
                 ]
             ]
@@ -47,9 +47,11 @@ navMenu { route, target, interp } =
             List.map
                 (\( r, t, w ) ->
                     a
-                        [ css <| buttonStyle
-                        , css <| setSelected r
+                        [ css <| buttonStyle ++ setSelected r
                         , onClick <| GoTo r
+
+                        -- , onMouseEnter <| MouseOver (Just r)
+                        -- , onMouseLeave <| MouseOver Nothing
                         ]
                         [ text <|
                             (r == route => resizeInvert t)
@@ -74,14 +76,15 @@ buttonStyle =
     , lineHeight <| px 48
     , fontWeight <| int 700
     , padding2 (px 0) (px 8)
+    , margin2 (px 32) (px 0)
     ]
 
 
-buttonStyleSelected : List Style
-buttonStyleSelected =
-    [ color colors.bg, backgroundColor colors.primary ]
+buttonStyleSelected : Route -> List Style
+buttonStyleSelected r =
+    [ color (colors r).bg, backgroundColor (colors r).primary ]
 
 
-buttonStyleUnselected : List Style
-buttonStyleUnselected =
-    [ color colors.fg, cursor pointer, hover [ color colors.primary ] ]
+buttonStyleUnselected : Route -> List Style
+buttonStyleUnselected r =
+    [ color (colors r).fg, cursor pointer, hover [ color (colors r).primary ] ]
