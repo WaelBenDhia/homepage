@@ -8,15 +8,15 @@ import AnimationFrame exposing (..)
 import Update exposing (update)
 import View exposing (view)
 import Mouse exposing (Position)
+import Guards exposing (..)
 
 
 subs : Mdl -> Sub Msg
 subs { clock, interp, target } =
     Sub.batch
-        [ if target /= Nothing || interp /= 1 then
-            AnimationFrame.diffs Tick
-          else
-            Sub.none
+        [ (target /= Nothing || interp /= 1)
+            => AnimationFrame.diffs Tick
+            |= Sub.none
         , Mouse.moves MouseMove
         ]
 

@@ -107,7 +107,7 @@ containerStyle r =
     , paddingTop <| vh 30
     , overflow <| auto
     , property "mix-blend-mode"
-        ((lightness (colorsStr r).bg < 128) => "lighten" |= "darken")
+        (lightness (colorsStr r).bg < 128 => "lighten" |= "darken")
     ]
 
 

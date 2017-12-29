@@ -5,13 +5,14 @@ import Html.Styled exposing (..)
 import Html.Styled.Attributes exposing (..)
 import Css exposing (..)
 import Theming exposing (..)
+import Guards exposing (..)
 
 
 pointer : Mdl -> Html msg
 pointer { mousePosition, interp, route } =
     let
         size =
-            48
+            32 + 64 * (1 - interp)
 
         innerSize =
             (1 - interp) * size
@@ -32,8 +33,11 @@ pointer { mousePosition, interp, route } =
                 , Css.height <| vh 100
                 , position fixed
                 , overflow Css.hidden
-                , Css.property "mix-blend-mode" "darken"
-                , opacity <| num 0.5
+                , Css.property "mix-blend-mode" <|
+                    (lightness (colorsStr route).bg < 128)
+                        => "lighten"
+                        |= "darken"
+                , opacity <| num 0.8
                 , Css.property "pointer-events" "none"
                 , zIndex <| int 16
                 ]

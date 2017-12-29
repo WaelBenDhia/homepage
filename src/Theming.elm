@@ -34,18 +34,18 @@ colorsStr r =
                 "#f00"
 
             Education ->
-                "#0f0"
+                "#4464ad"
 
             Work ->
-                "#088"
+                "#ffba08"
 
             Skills ->
-                "#00f"
+                "#55dde0"
 
-            _ ->
-                "#880"
+            NotFound ->
+                "#dd7373"
         )
-    , bg = "#f5f5f5"
+    , bg = "#fff"
     }
 
 
@@ -55,7 +55,7 @@ getAccent primary =
         ( r, g, b ) =
             toRGB primary
     in
-        fromRGB ( r + b, g + r, b + g )
+        fromRGB ( 255 - g, 255 - b, 255 - r )
 
 
 fromRGB : ( Int, Int, Int ) -> String
@@ -75,17 +75,16 @@ toRGB hex =
                 => (dropLeft 1 hex)
                 |= hex
 
-        col_ =
-            toList
-                ((length col == 3)
-                    => (foldl (\cur prev -> prev ++ fromList [ cur, '0' ]) "" col)
-                    |= col
-                )
+        mult_ c =
+            fromHex c * 17
 
         mult c1 c2 =
             (fromHex c1) * 16 + fromHex c2
     in
-        case col_ of
+        case toList col of
+            [ r, g, b ] ->
+                ( mult_ r, mult_ g, mult_ b )
+
             [ r1, r2, g1, g2, b1, b2 ] ->
                 ( mult r1 r2, mult g1 g2, mult b1 b2 )
 
