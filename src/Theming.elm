@@ -12,11 +12,17 @@ colors r =
     let
         cStr =
             colorsStr r
+
+        accent =
+            lightness cStr.bg < 128 => cStr.primary |= getAccent cStr.primary
+
+        primary =
+            lightness cStr.bg < 128 => getAccent cStr.primary |= cStr.primary
     in
-        { primary = hex cStr.primary
+        { primary = hex primary
         , bg = hex cStr.bg
         , fg = hex <| invert cStr.bg
-        , accent = hex <| getAccent cStr.primary
+        , accent = hex accent
         }
 
 
@@ -28,18 +34,18 @@ colorsStr r =
                 "#f00"
 
             Education ->
-                "#880"
-
-            Work ->
                 "#0f0"
 
-            Skills ->
+            Work ->
                 "#088"
 
-            _ ->
+            Skills ->
                 "#00f"
+
+            _ ->
+                "#880"
         )
-    , bg = "#fff"
+    , bg = "#f5f5f5"
     }
 
 
@@ -49,14 +55,14 @@ getAccent primary =
         ( r, g, b ) =
             toRGB primary
     in
-        fromRGB ( b + r, g + r, b + g )
+        fromRGB ( r + b, g + r, b + g )
 
 
 fromRGB : ( Int, Int, Int ) -> String
 fromRGB ( r, g, b ) =
     let
         dHex n =
-            [ toHex ((n % 256) // 16), toHex (n % 16) ]
+            [ toHex (n // 16), toHex (n % 16) ]
     in
         fromList <| '#' :: dHex r ++ dHex g ++ dHex b
 
@@ -72,7 +78,7 @@ toRGB hex =
         col_ =
             toList
                 ((length col == 3)
-                    => (foldl (\cur prev -> prev ++ fromList [ cur, cur ]) "" col)
+                    => (foldl (\cur prev -> prev ++ fromList [ cur, '0' ]) "" col)
                     |= col
                 )
 
@@ -211,5 +217,5 @@ toHex n =
         15 ->
             'f'
 
-        _ ->
-            '0'
+        x ->
+            x < 0 => '0' |= 'f'

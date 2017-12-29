@@ -24,14 +24,10 @@ mainStyle { route, interp } =
 
 
 view : Mdl -> Html Msg
-view ({ route, interp } as model) =
+view model =
     div
         [ css <| mainStyle model ]
     <|
         [ Pointer.pointer model, importNode, navMenu model ]
             ++ title model
             ++ [ Content.content model ]
-
-
-
---div [ css [ position absolute, backgroundColor <| hex "#0f0", width <| pct 100, height <| pct <| 100 * interp ] ] [],

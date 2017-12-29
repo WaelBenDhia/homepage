@@ -38,7 +38,7 @@ navMenu { route, target, interp } =
                 , flexDirection column
                 , alignItems flexStart
                 , position absolute
-                , left <| px <| 15 * interp
+                , left <| px <| (16 * interp) - 16
                 , bottom <| calc (vh 50) minus (px 224)
                 , zIndex <| int 1
                 ]
@@ -82,9 +82,9 @@ buttonStyle =
 
 buttonStyleSelected : Route -> List Style
 buttonStyleSelected r =
-    [ color (colors r).bg, backgroundColor (colors r).primary ]
+    [ color (colors r).bg, backgroundColor (colors r).primary, paddingLeft <| px 24 ]
 
 
 buttonStyleUnselected : Route -> List Style
 buttonStyleUnselected r =
-    [ color (colors r).fg, cursor pointer, hover [ color (colors r).primary ] ]
+    [ color (colors r).fg, cursor pointer, hover [ color (colors r).primary ], paddingLeft <| px 24 ]

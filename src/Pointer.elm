@@ -27,18 +27,20 @@ pointer { mousePosition, interp, route } =
     in
         div
             [ css
-                [ Css.width <| vw 100
-                , Css.height <| vw 100
+                [ left <| px 0
+                , Css.width <| vw 100
+                , Css.height <| vh 100
                 , position fixed
                 , overflow Css.hidden
-                , Css.property "mix-blend-mode" "exclusion"
+                , Css.property "mix-blend-mode" "darken"
+                , opacity <| num 0.5
                 , Css.property "pointer-events" "none"
                 , zIndex <| int 16
                 ]
             ]
             [ div
                 [ css <|
-                    [ backgroundColor (colors route).primary
+                    [ backgroundColor (colors route).accent
                     , Css.property "pointer-events" "none"
                     ]
                         ++ pointerStyle size
