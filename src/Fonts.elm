@@ -12,8 +12,8 @@ importNode =
 
 fonts : { arabic : String, body : String, heading : String }
 fonts =
-    { body = "Montserrat"
-    , heading = "Josefin Slab"
+    { body = "Hind"
+    , heading = "Montserrat"
     , arabic = "Amiri"
     }
 
@@ -29,7 +29,7 @@ fontLink =
             , format fonts.body
             , ":300,400|"
             , format fonts.heading
-            , ":400|"
+            , ":300,400,500|"
             , format fonts.arabic
             , "&subset=arabic');"
             ]

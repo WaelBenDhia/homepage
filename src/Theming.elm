@@ -42,13 +42,13 @@ colorsStr r =
                 "#f00"
 
             Education ->
-                "#4464ad"
+                "#009999"
 
             Work ->
-                "#ffba08"
+                "#ff7400"
 
             Skills ->
-                "#55f"
+                "#00cc00"
 
             NotFound ->
                 "#dd7373"
@@ -126,7 +126,7 @@ fromHex c =
     in
         (code < toCode '0' => 0)
             |= (code < toCode 'a' => code - toCode '0')
-            |= (code < toCode 'f' => code - toCode 'a')
+            |= (code < toCode 'f' => 10 + code - toCode 'a')
             |= 15
 
 

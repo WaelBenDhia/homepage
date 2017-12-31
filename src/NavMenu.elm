@@ -74,7 +74,7 @@ buttonStyle =
     , fontSize <| px 32
     , Css.height <| px 48
     , lineHeight <| px 48
-    , fontWeight <| int 700
+    , fontWeight <| int 300
     , padding2 (px 0) (px 8)
     , margin2 (px 32) (px 0)
     ]
@@ -82,7 +82,23 @@ buttonStyle =
 
 buttonStyleSelected : Route -> List Style
 buttonStyleSelected r =
-    [ color (colors r).bg, backgroundColor (colors r).primary, paddingLeft <| px 16 ]
+    [ color (colors r).fg
+    , after
+        [ Css.property "content" "''"
+        , position absolute
+        , left <| px 0
+        , bottom <| px 0
+        , backgroundColor (colors r).primary
+        , Css.width <| pct 100
+        , Css.height <| pct 40
+        , zIndex <| int -1
+        ]
+    , paddingLeft <| px 16
+    ]
+
+
+
+-- [ color (colors r).bg, backgroundColor (colors r).primary, paddingLeft <| px 16 ]
 
 
 buttonStyleUnselected : Route -> List Style

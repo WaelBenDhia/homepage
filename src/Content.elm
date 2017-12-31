@@ -44,11 +44,12 @@ content { route, interp } =
 
         borderStyle vertical =
             [ position fixed
-            , Css.right <| calc (pct 15) plus (px <| vertical => 16 |= 32)
-            , top <| calc (vh 30) plus (px <| vertical => 32 |= 16)
+            , Css.right <| calc (pct 15) plus (px <| vertical => 16 |= 48)
+            , top <| calc (vh 30) plus (px <| vertical => 48 |= 16)
             , vertical => (width <| px 8) |= (width <| vw 25)
             , vertical => (height <| vh 25) |= (height <| px 8)
             , backgroundColor col.primary
+            , zIndex <| int 2
             ]
 
         contentStyle =
@@ -57,13 +58,11 @@ content { route, interp } =
         gradientStyle =
             [ position fixed
             , backgroundImage <|
-                linearGradient
-                    (stop col.bg)
-                    (stop <| rgba 0 0 0 0)
-                    []
+                linearGradient (stop col.bg) (stop <| rgba 0 0 0 0) []
             , width <| vw 60
             , height <| px 64
             , Css.left <| vw 25
+            , zIndex <| int 1
             , after
                 [ property "content" "''"
                 , position fixed
@@ -75,9 +74,9 @@ content { route, interp } =
                 ]
             ]
     in
-        div [ css <| containerStyle ]
-            [ div [ css <| gradientStyle ] []
-            , div [ css <| contentStyle ] paragraphs
+        div [ css containerStyle ]
+            [ div [ css gradientStyle ] []
+            , div [ css contentStyle ] paragraphs
             , div [ css <| borderStyle True ] []
             , div [ css <| borderStyle False ] []
             ]
@@ -127,12 +126,22 @@ splitParagraphs r =
 firstLetterStyle : Route -> Float -> List Style
 firstLetterStyle r size =
     [ fontSize <| px (1.8 * size)
+    , position relative
     , padding <| px 4
     , paddingBottom <| px 0
     , fontFamilies [ fonts.heading ]
-    , fontWeight <| int 700
-    , color (colors r).bg
-    , backgroundColor (colors r).primary
+    , fontWeight <| int 500
+    , after
+        [ Css.property "content" "''"
+        , position absolute
+        , Css.left <| px 0
+        , top <| px 0
+        , backgroundColor (colors r).primary
+        , Css.width <| pct 70
+        , Css.height <| pct 80
+        , zIndex <| int -1
+        ]
+    , color (colors r).fg
     , width <| px 16
     ]
 

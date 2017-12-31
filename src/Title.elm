@@ -55,14 +55,7 @@ title { route, interp } =
     in
         List.map
             (\( t, style, cStyle ) ->
-                (String.length t > 0)
-                    => (t
-                            |> String.words
-                            |> intersperse " "
-                            |> List.map (\x -> span [ css style ] [ text x ])
-                            |> div [ css cStyle ]
-                       )
-                    |= div [] []
+                div [ css cStyle ] [ span [ css style ] [ text t ] ]
             )
             [ ( resize titleEn, titleStyle route, titleContainerStyle route )
             , ( resize titleAr, decoStyle route, decoContainerStyle )
@@ -71,7 +64,7 @@ title { route, interp } =
 
 styleBase : FontSize a -> String -> List Style
 styleBase size font =
-    [ fontWeight (int 300)
+    [ fontWeight <| int 500
     , fontSize size
     , fontFamilies [ font ]
     ]
@@ -119,9 +112,10 @@ titleStyle : Route -> List Style
 titleStyle r =
     (++)
         (styleBase (px 80) fonts.heading)
-        [ color (colors r).bg
+        [ color (colors r).fg
         , zIndex <| int 1
-        , backgroundColor (colors r).primary
+
+        -- , backgroundColor (colors r).primary
         , padding <| px 8
         , paddingBottom <| px 0
         ]
@@ -133,6 +127,14 @@ titleContainerStyle r =
     , Css.left <| pct 12.5
     , top <| pct 12.5
     , zIndex <| int 1
-    , property "mix-blend-mode"
-        ((lightness (colorsStr r).bg < 128) => "lighten" |= "darken")
+    , after
+        [ Css.property "content" "''"
+        , position absolute
+        , Css.left <| px -16
+        , top <| px -16
+        , backgroundColor (colors r).primary
+        , Css.width <| calc (pct 100) minus (px 8)
+        , Css.height <| pct 80
+        , zIndex <| int -1
+        ]
     ]
