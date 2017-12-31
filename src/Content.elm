@@ -16,6 +16,9 @@ import Guards exposing (..)
 content : Mdl -> Html msg
 content { route, interp } =
     let
+        col =
+            colors route
+
         newLen =
             String.length >> Basics.toFloat >> (*) interp >> Basics.round
 
@@ -24,10 +27,59 @@ content { route, interp } =
 
         paragraphs =
             route |> contentText |> resize |> splitParagraphs route
+
+        containerStyle =
+            [ position absolute
+            , Css.left <| px 0
+            , top <| px 0
+            , width <| pct 60
+            , height <| vh 70
+            , paddingLeft <| pct 25
+            , paddingRight <| pct 15
+            , paddingTop <| vh 30
+            , overflow <| auto
+            , property "mix-blend-mode"
+                (lightness (colorsStr route).bg < 128 => "lighten" |= "darken")
+            ]
+
+        borderStyle vertical =
+            [ position fixed
+            , Css.right <| calc (pct 15) plus (px <| vertical => 16 |= 32)
+            , top <| calc (vh 30) plus (px <| vertical => 32 |= 16)
+            , vertical => (width <| px 8) |= (width <| vw 25)
+            , vertical => (height <| vh 25) |= (height <| px 8)
+            , backgroundColor col.primary
+            ]
+
+        contentStyle =
+            [ color col.fg, width <| pct 100, height <| pct 100 ]
+
+        gradientStyle =
+            [ position fixed
+            , backgroundImage <|
+                linearGradient
+                    (stop col.bg)
+                    (stop <| rgba 0 0 0 0)
+                    []
+            , width <| vw 60
+            , height <| px 64
+            , Css.left <| vw 25
+            , after
+                [ property "content" "''"
+                , position fixed
+                , backgroundColor col.bg
+                , width <| vw 60
+                , Css.left <| vw 25
+                , height <| vh 30
+                , top <| px 0
+                ]
+            ]
     in
-        div [ css <| containerStyle route ]
-            [ div [ css <| gradientStyle route ] []
-            , div [ css <| contentStyle route ] paragraphs
+        div [ css <| containerStyle ]
+            [ div [ css <| gradientStyle ] []
+            , div [ css <| contentStyle ] paragraphs
+            , div [ css <| borderStyle True ] []
+            , div [ css <| borderStyle False ] []
             ]
 
 
@@ -65,50 +117,6 @@ contentText route =
 
         NotFound ->
             "You seem to be lost little lamb."
-
-
-gradientStyle : Route -> List Style
-gradientStyle r =
-    [ position fixed
-    , backgroundImage <|
-        linearGradient
-            (stop (colors r).bg)
-            (stop <| rgba 0 0 0 0)
-            []
-    , width <| vw 60
-    , height <| px 64
-    , Css.left <| vw 25
-    , after
-        [ property "content" "''"
-        , position fixed
-        , backgroundColor (colors r).bg
-        , width <| vw 60
-        , Css.left <| vw 25
-        , height <| vh 30
-        , top <| px 0
-        ]
-    ]
-
-
-contentStyle : Route -> List Style
-contentStyle r =
-    [ color (colors r).fg, width <| pct 100, height <| pct 100 ]
-
-
-containerStyle : Route -> List Style
-containerStyle r =
-    [ position absolute
-    , Css.left <| px 0
-    , top <| px 0
-    , width <| pct 60
-    , height <| vh 70
-    , paddingLeft <| pct 25
-    , paddingRight <| pct 15
-    , paddingTop <| vh 30
-    , overflow <| auto
-    , property "mix-blend-mode"
-        (lightness (colorsStr r).bg < 128 => "lighten" |= "darken")
-    ]
 
 
 splitParagraphs : Route -> String -> List (Html msg)

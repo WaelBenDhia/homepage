@@ -2,7 +2,7 @@ module Theming exposing (..)
 
 import Css exposing (..)
 import String exposing (..)
-import Char
+import Char exposing (..)
 import Guards exposing (..)
 import Routing exposing (..)
 
@@ -13,11 +13,19 @@ colors r =
         cStr =
             colorsStr r
 
-        accent =
-            lightness cStr.bg < 128 => cStr.primary |= getAccent cStr.primary
+        ( col1, col2 ) =
+            ( cStr.primary, getAccent cStr.primary )
 
-        primary =
-            lightness cStr.bg < 128 => getAccent cStr.primary |= cStr.primary
+        ( lighter, darker ) =
+            lightness col1
+                > lightness col2
+                => ( col1, col2 )
+                |= ( col2, col1 )
+
+        ( primary, accent ) =
+            (lightness cStr.bg < 128)
+                => ( lighter, darker )
+                |= ( darker, lighter )
     in
         { primary = hex primary
         , bg = hex cStr.bg
@@ -40,7 +48,7 @@ colorsStr r =
                 "#ffba08"
 
             Skills ->
-                "#55dde0"
+                "#55f"
 
             NotFound ->
                 "#dd7373"
@@ -112,109 +120,19 @@ invert hex =
 
 fromHex : Char -> Int
 fromHex c =
-    case Char.toLower c of
-        '0' ->
-            0
-
-        '1' ->
-            1
-
-        '2' ->
-            2
-
-        '3' ->
-            3
-
-        '4' ->
-            4
-
-        '5' ->
-            5
-
-        '6' ->
-            6
-
-        '7' ->
-            7
-
-        '8' ->
-            8
-
-        '9' ->
-            9
-
-        'a' ->
-            10
-
-        'b' ->
-            11
-
-        'c' ->
-            12
-
-        'd' ->
-            13
-
-        'e' ->
-            14
-
-        'f' ->
-            15
-
-        _ ->
-            0
+    let
+        code =
+            toCode <| Char.toLower c
+    in
+        (code < toCode '0' => 0)
+            |= (code < toCode 'a' => code - toCode '0')
+            |= (code < toCode 'f' => code - toCode 'a')
+            |= 15
 
 
-toHex : number -> Char
+toHex : Int -> Char
 toHex n =
-    case n of
-        0 ->
-            '0'
-
-        1 ->
-            '1'
-
-        2 ->
-            '2'
-
-        3 ->
-            '3'
-
-        4 ->
-            '4'
-
-        5 ->
-            '5'
-
-        6 ->
-            '6'
-
-        7 ->
-            '7'
-
-        8 ->
-            '8'
-
-        9 ->
-            '9'
-
-        10 ->
-            'a'
-
-        11 ->
-            'b'
-
-        12 ->
-            'c'
-
-        13 ->
-            'd'
-
-        14 ->
-            'e'
-
-        15 ->
-            'f'
-
-        x ->
-            x < 0 => '0' |= 'f'
+    (n < 0 => '0')
+        |= (n < 10 => fromCode (toCode '0' + n))
+        |= (n < 16 => fromCode (toCode 'a' + (n - 10)))
+        |= 'f'

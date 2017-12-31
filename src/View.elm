@@ -17,9 +17,9 @@ mainStyle : Mdl -> List Style
 mainStyle { route, interp } =
     [ fontFamilies [ fonts.body ]
     , backgroundColor (colors route).bg
-    , width <| calc (pct 100) minus (px <| 16 * interp)
+    , width <| calc (pct 100) minus (px <| 8 * interp)
     , height <| pct 100
-    , borderLeft3 (px <| 16 * interp) solid (colors route).primary
+    , borderLeft3 (px <| 8 * interp) solid (colors route).primary
     ]
 
 
