@@ -1,4 +1,4 @@
-module Pointer exposing (pointer)
+module Pointer exposing (pointerContainer)
 
 import Model exposing (..)
 import Html.Styled exposing (..)
@@ -7,8 +7,8 @@ import Css exposing (..)
 import Theming exposing (..)
 
 
-pointer : Mdl -> Html msg
-pointer { mousePosition, route, mouseOver, target } =
+pointerContainer : Mdl -> Html msg
+pointerContainer { mousePosition, route, mouseOver, target } =
     let
         size =
             case mouseOver of

@@ -5,31 +5,24 @@ import Html.Styled.Attributes exposing (..)
 import String exposing (..)
 
 
-importNode : Html msg
-importNode =
-    node "style" [ type_ "text/css" ] [ text fontLink ]
-
-
 fonts : { arabic : String, body : String, heading : String }
 fonts =
-    { body = "Work Sans"
-    , heading = "Raleway"
-    , arabic = "Amiri"
-    }
+    { body = "Work Sans", heading = "Raleway", arabic = "Amiri" }
 
 
-fontLink : String
-fontLink =
+importNode : Html msg
+importNode =
     let
         format =
             split " " >> join "+"
+
+        fontLink =
+            "@import url('https://fonts.googleapis.com/css?family="
+                ++ format fonts.body
+                ++ ":300,400|"
+                ++ format fonts.heading
+                ++ ":300,400,500|"
+                ++ format fonts.arabic
+                ++ "&subset=arabic');"
     in
-        concat
-            [ "@import url('https://fonts.googleapis.com/css?family="
-            , format fonts.body
-            , ":300,400|"
-            , format fonts.heading
-            , ":300,400,500|"
-            , format fonts.arabic
-            , "&subset=arabic');"
-            ]
+        node "style" [ type_ "text/css" ] [ text fontLink ]

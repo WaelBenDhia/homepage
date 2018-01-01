@@ -13,25 +13,24 @@ import Content exposing (content)
 import Pointer exposing (..)
 
 
-mainStyle : Mdl -> List Style
-mainStyle ({ route } as mdl) =
-    let
-        borderWidth =
-            px <| 8 * getInterp mdl
-    in
-        [ fontFamilies [ fonts.body ]
-        , backgroundColor (colors route).bg
-        , width <| calc (pct 100) minus borderWidth
-        , height <| pct 100
-        , borderLeft3 borderWidth solid (colors route).primary
-        ]
-
-
 view : Mdl -> Html Msg
-view model =
+view ({ route } as mdl) =
     div
-        [ css <| mainStyle model ]
+        [ css <|
+            let
+                borderWidth =
+                    px <| 8 * getInterp mdl
+            in
+                [ fontFamilies [ fonts.body ]
+                , backgroundColor (colors route).bg
+                , width <| calc (pct 100) minus borderWidth
+                , height <| pct 100
+                , borderLeft3 borderWidth solid (colors route).primary
+                ]
+        ]
     <|
-        [ Pointer.pointer model, importNode, navMenu model ]
-            ++ title model
-            ++ [ Content.content model ]
+        pointerContainer mdl
+            :: importNode
+            :: navMenu mdl
+            :: Content.content mdl
+            :: title mdl

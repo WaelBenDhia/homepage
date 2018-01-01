@@ -11,129 +11,81 @@ import List exposing (intersperse)
 import Model exposing (Mdl, getInterp)
 
 
-pageTitle : Route -> ( String, String )
-pageTitle route =
-    case route of
-        About ->
-            ( "Wael Ben Dhia", "وَائِلْ بِنْ ضِياءْ" )
-
-        Education ->
-            ( "Education", "تَعْلِيمْ" )
-
-        Work ->
-            ( "Work", "عَمَلْ" )
-
-        Skills ->
-            ( "Skills", "مَهَارَاتْ" )
-
-        NotFound ->
-            ( "404", "٤٠٤" )
-
-
-zip : List a -> List b -> List ( a, b )
-zip xs ys =
-    case ( xs, ys ) of
-        ( x :: xBack, y :: yBack ) ->
-            ( x, y ) :: zip xBack yBack
-
-        ( _, _ ) ->
-            []
-
-
 title : Mdl -> List (Html msg)
 title ({ route } as mdl) =
     let
+        col =
+            colors route
+
         newLen =
-            Basics.round << (*) (getInterp mdl) << toFloat << length
+            length >> toFloat >> ((*) <| getInterp mdl) >> Basics.round
 
         resize s =
             slice 0 (newLen s) s
 
-        ( titleEn, titleAr ) =
-            pageTitle route
-    in
-        List.map
-            (\( t, style, cStyle ) ->
-                div [ css cStyle ] [ span [ css <| style route ] [ text <| resize t ] ]
-            )
-            [ ( titleEn, titleStyle, titleContainerStyle route )
-            , ( titleAr, decoStyle, decoContainerStyle )
+        ( textEn, textAr ) =
+            case route of
+                About ->
+                    ( "Wael Ben Dhia", "وَائِلْ بِنْ ضِياءْ" )
+
+                Education ->
+                    ( "Education", "تَعْلِيمْ" )
+
+                Work ->
+                    ( "Work", "عَمَلْ" )
+
+                Skills ->
+                    ( "Skills", "مَهَارَاتْ" )
+
+                NotFound ->
+                    ( "404", "٤٠٤" )
+
+        containerEn =
+            [ position absolute
+            , Css.left <| pct 12.5
+            , top <| pct 12.5
+            , zIndex <| int 1
+            , after
+                [ Css.property "content" "''"
+                , position absolute
+                , Css.left <| px -16
+                , top <| px -16
+                , backgroundColor col.primary
+                , Css.width <| calc (pct 100) minus (px 8)
+                , Css.height <| pct 80
+                , zIndex <| int -1
+                ]
             ]
 
+        containerAr =
+            [ position absolute
+            , Css.right <| pct 6.7
+            , top <| pct 2
+            , zIndex <| int 0
+            ]
 
-styleBase : FontSize a -> String -> List Style
-styleBase size font =
-    [ fontWeight <| int 500
-    , fontSize size
-    , fontFamilies [ font ]
-    ]
+        styleAr =
+            [ fontWeight <| int 500
+            , fontSize <| vw 16
+            , fontFamilies [ fonts.arabic ]
+            , color col.accent
+            ]
 
+        styleEn =
+            [ fontWeight <| int 500
+            , fontSize <| px 80
+            , fontFamilies [ fonts.heading ]
+            , color col.fg
+            , zIndex <| int 1
+            , padding <| px 8
+            , paddingBottom <| px 0
+            ]
 
-decoStyle : Route -> List Style
-decoStyle r =
-    (styleBase (vw 16) fonts.arabic) ++ [ color (colors r).accent ]
-
-
-decoContainerStyle : List Style
-decoContainerStyle =
-    [ position absolute
-    , Css.right <| pct 6.7
-    , top <| pct 2
-    , zIndex <| int 0
-    ]
-
-
-textShadow : Int -> String -> String
-textShadow shadowWidth color =
-    let
-        interval =
-            List.range -shadowWidth shadowWidth
-
-        len =
-            List.length interval
-
-        allPairs =
-            zip
-                (interval |> List.repeat len |> List.concat)
-                (interval |> List.concatMap (List.repeat len))
-
-        colored =
-            List.map
-                (\( x, y ) ->
-                    String.concat <| intersperse "px " [ toString x, toString y, color ]
-                )
-                allPairs
+        transform ( t, style, cStyle ) =
+            div [ css cStyle ] [ span [ css style ] [ text <| resize t ] ]
     in
-        String.join ", " colored
-
-
-titleStyle : Route -> List Style
-titleStyle r =
-    (++)
-        (styleBase (px 80) fonts.heading)
-        [ color (colors r).fg
-        , zIndex <| int 1
-
-        -- , backgroundColor (colors r).primary
-        , padding <| px 8
-        , paddingBottom <| px 0
-        ]
-
-
-titleContainerStyle : Route -> List Style
-titleContainerStyle r =
-    [ position absolute
-    , Css.left <| pct 12.5
-    , top <| pct 12.5
-    , zIndex <| int 1
-    , after
-        [ Css.property "content" "''"
-        , position absolute
-        , Css.left <| px -16
-        , top <| px -16
-        , backgroundColor (colors r).primary
-        , Css.width <| calc (pct 100) minus (px 8)
-        , Css.height <| pct 80
-        , zIndex <| int -1
-        ]
-    ]
+        List.map
+            transform
+            [ ( textEn, styleEn, containerEn )
+            , ( textAr, styleAr, containerAr )
+            ]
