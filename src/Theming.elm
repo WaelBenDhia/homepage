@@ -3,7 +3,6 @@ module Theming exposing (..)
 import Css exposing (..)
 import String exposing (..)
 import Char exposing (..)
-import Guards exposing (..)
 import Routing exposing (..)
 
 
@@ -17,15 +16,16 @@ colors r =
             ( cStr.primary, getAccent cStr.primary )
 
         ( lighter, darker ) =
-            lightness col1
-                > lightness col2
-                => ( col1, col2 )
-                |= ( col2, col1 )
+            if lightness col1 > lightness col2 then
+                ( col1, col2 )
+            else
+                ( col2, col1 )
 
         ( primary, accent ) =
-            (lightness cStr.bg < 128)
-                => ( lighter, darker )
-                |= ( darker, lighter )
+            if lightness cStr.bg < 128 then
+                ( lighter, darker )
+            else
+                ( darker, lighter )
     in
         { primary = hex primary
         , bg = hex cStr.bg
@@ -79,9 +79,10 @@ toRGB : String -> ( Int, Int, Int )
 toRGB hex =
     let
         col =
-            (length hex == 4 || length hex == 7)
-                => (dropLeft 1 hex)
-                |= hex
+            if length hex == 4 || length hex == 7 then
+                dropLeft 1 hex
+            else
+                hex
 
         mult_ c =
             fromHex c * 17
@@ -124,15 +125,23 @@ fromHex c =
         code =
             toCode <| Char.toLower c
     in
-        (code < toCode '0' => 0)
-            |= (code < toCode 'a' => code - toCode '0')
-            |= (code < toCode 'f' => 10 + code - toCode 'a')
-            |= 15
+        if code < toCode '0' then
+            0
+        else if code < toCode 'a' then
+            code - toCode '0'
+        else if code < toCode 'f' then
+            10 + code - toCode 'a'
+        else
+            15
 
 
 toHex : Int -> Char
 toHex n =
-    (n < 0 => '0')
-        |= (n < 10 => fromCode (toCode '0' + n))
-        |= (n < 16 => fromCode (toCode 'a' + (n - 10)))
-        |= 'f'
+    if n < 0 then
+        '0'
+    else if n < 10 then
+        fromCode <| toCode '0' + n
+    else if n < 16 then
+        fromCode <| toCode 'a' + (n - 10)
+    else
+        'f'

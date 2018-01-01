@@ -10,4 +10,5 @@ type Msg
     = OnLocationChange Location
     | Tick Time
     | GoTo Route
-    | MouseMove Position
+    | MouseMove Mouse.Position
+    | MouseOver (Maybe ( Int, Int ))

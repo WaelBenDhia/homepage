@@ -7,30 +7,91 @@ import Messages exposing (..)
 import Css exposing (..)
 import Fonts exposing (..)
 import Routing exposing (..)
-import List exposing (..)
+import List
 import Theming exposing (..)
-import String exposing (slice)
-import Guards exposing (..)
-import Model exposing (Mdl)
+import String exposing (slice, length)
+import Model exposing (Mdl, getInterp)
 
 
 navMenu : Mdl -> Html Msg
-navMenu { route, target, interp } =
+navMenu ({ route, target } as mdl) =
     let
-        newLen =
-            String.length >> Basics.toFloat >> (*) interp >> Basics.round
+        interp =
+            getInterp mdl
 
-        newLenInverted =
-            String.length >> Basics.toFloat >> (*) (1 - interp) >> Basics.round
+        col =
+            colors route
 
-        resize s =
-            slice 0 (newLen s) s
+        newLen inv =
+            length
+                >> toFloat
+                >> (*)
+                    (if inv then
+                        1 - interp
+                     else
+                        interp
+                    )
+                >> Basics.round
 
-        resizeInvert s =
-            slice (newLenInverted s) (String.length s) s
+        resize inv s =
+            slice
+                (if inv then
+                    newLen True s
+                 else
+                    0
+                )
+                (if inv then
+                    length s
+                 else
+                    newLen False s
+                )
+                s
 
-        setSelected r =
-            (route == r => buttonStyleSelected |= buttonStyleUnselected) route
+        styleSelected =
+            [ color col.fg
+            , after
+                [ Css.property "content" "''"
+                , position absolute
+                , left <| px 0
+                , bottom <| px 0
+                , backgroundColor col.primary
+                , Css.width <| pct 100
+                , Css.height <| pct 40
+                , zIndex <| int -1
+                ]
+            , paddingLeft <| px 16
+            ]
+
+        styleUnselected =
+            [ color col.fg
+            , cursor pointer
+            , hover [ color col.primary ]
+            , paddingLeft <| px 24
+            ]
+
+        toNavElem ( r, t, w, offset ) =
+            let
+                routeThen val def =
+                    if route == r then
+                        val
+                    else
+                        def
+            in
+                a
+                    [ css <|
+                        buttonStyle
+                            ++ (routeThen styleSelected styleUnselected)
+                    , onClick <| GoTo r
+                    , onMouseEnter
+                        (MouseOver <| routeThen Nothing (Just offset))
+                    , onMouseLeave (MouseOver Nothing)
+                    ]
+                    [ text <|
+                        if r == route || Just r == target then
+                            resize (r == route) t
+                        else
+                            t
+                    ]
     in
         div
             [ css
@@ -39,30 +100,17 @@ navMenu { route, target, interp } =
                 , alignItems flexStart
                 , position absolute
                 , left <| px <| (8 * interp) - 8
-                , bottom <| calc (vh 50) minus (px 224)
+                , top <| calc (vh 50) minus (px 224)
                 , zIndex <| int 1
                 ]
             ]
         <|
             List.map
-                (\( r, t, w ) ->
-                    a
-                        [ css <| buttonStyle ++ setSelected r
-                        , onClick <| GoTo r
-
-                        -- , onMouseEnter <| MouseOver (Just r)
-                        -- , onMouseLeave <| MouseOver Nothing
-                        ]
-                        [ text <|
-                            (r == route => resizeInvert t)
-                                |= (Just r == target => resize t)
-                                |= t
-                        ]
-                )
-                [ ( About, "About", 82 )
-                , ( Education, "Education", 139 )
-                , ( Work, "Work", 82 )
-                , ( Skills, "Skills", 70 )
+                toNavElem
+                [ ( About, "About", 82, ( 0, 90 ) )
+                , ( Education, "Education", 139, ( 1, 154 ) )
+                , ( Work, "Work", 82, ( 2, 86 ) )
+                , ( Skills, "Skills", 70, ( 3, 82 ) )
                 ]
 
 
@@ -78,29 +126,3 @@ buttonStyle =
     , padding2 (px 0) (px 8)
     , margin2 (px 32) (px 0)
     ]
-
-
-buttonStyleSelected : Route -> List Style
-buttonStyleSelected r =
-    [ color (colors r).fg
-    , after
-        [ Css.property "content" "''"
-        , position absolute
-        , left <| px 0
-        , bottom <| px 0
-        , backgroundColor (colors r).primary
-        , Css.width <| pct 100
-        , Css.height <| pct 40
-        , zIndex <| int -1
-        ]
-    , paddingLeft <| px 16
-    ]
-
-
-
--- [ color (colors r).bg, backgroundColor (colors r).primary, paddingLeft <| px 16 ]
-
-
-buttonStyleUnselected : Route -> List Style
-buttonStyleUnselected r =
-    [ color (colors r).fg, cursor pointer, hover [ color (colors r).primary ], paddingLeft <| px 24 ]

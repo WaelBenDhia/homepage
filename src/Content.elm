@@ -6,27 +6,23 @@ import Html.Styled exposing (..)
 import Html.Styled.Attributes exposing (class, css, type_)
 import Css exposing (..)
 import String exposing (..)
-import List exposing (..)
+import List
 import Routing exposing (..)
-import Model exposing (Mdl)
+import Model exposing (Mdl, getInterp)
 import Theming exposing (..)
-import Guards exposing (..)
 
 
 content : Mdl -> Html msg
-content { route, interp } =
+content ({ route } as mdl) =
     let
         col =
             colors route
 
         newLen =
-            String.length >> Basics.toFloat >> (*) interp >> Basics.round
+            Basics.round << (*) (getInterp mdl) << Basics.toFloat << length
 
         resize s =
             slice 0 (newLen s) s
-
-        paragraphs =
-            route |> contentText |> resize |> splitParagraphs route
 
         containerStyle =
             [ position absolute
@@ -38,48 +34,63 @@ content { route, interp } =
             , paddingRight <| pct 15
             , paddingTop <| vh 30
             , overflow <| auto
-            , property "mix-blend-mode"
-                (lightness (colorsStr route).bg < 128 => "lighten" |= "darken")
+            , property "mix-blend-mode" <|
+                if lightness (colorsStr route).bg < 128 then
+                    "lighten"
+                else
+                    "darken"
             ]
 
-        borderStyle vertical =
-            [ position fixed
-            , Css.right <| calc (pct 15) plus (px <| vertical => 16 |= 48)
-            , top <| calc (vh 30) plus (px <| vertical => 48 |= 16)
-            , vertical => (width <| px 8) |= (width <| vw 25)
-            , vertical => (height <| vh 25) |= (height <| px 8)
-            , backgroundColor col.primary
-            , zIndex <| int 2
-            ]
+        border vertical =
+            let
+                vertThen val def =
+                    if vertical then
+                        val
+                    else
+                        def
+            in
+                div
+                    [ css
+                        [ position fixed
+                        , Css.right <| calc (pct 15) plus (px <| vertThen 16 48)
+                        , top <| calc (vh 30) plus (px <| vertThen 48 16)
+                        , vertThen (width <| px 8) (width <| vw 25)
+                        , vertThen (height <| vh 25) (height <| px 8)
+                        , backgroundColor col.primary
+                        , zIndex <| int 2
+                        ]
+                    ]
+                    []
 
-        contentStyle =
-            [ color col.fg, width <| pct 100, height <| pct 100 ]
+        content =
+            div [ css [ color col.fg, width <| pct 100, height <| pct 100 ] ]
+                (splitParagraphs route <| resize <| contentText route)
 
-        gradientStyle =
-            [ position fixed
-            , backgroundImage <|
-                linearGradient (stop col.bg) (stop <| rgba 0 0 0 0) []
-            , width <| vw 60
-            , height <| px 64
-            , Css.left <| vw 25
-            , zIndex <| int 1
-            , after
-                [ property "content" "''"
-                , position fixed
-                , backgroundColor col.bg
-                , width <| vw 60
-                , Css.left <| vw 25
-                , height <| vh 30
-                , top <| px 0
+        shadower =
+            div
+                [ css
+                    [ position fixed
+                    , backgroundImage <|
+                        linearGradient (stop col.bg) (stop <| rgba 0 0 0 0) []
+                    , width <| vw 60
+                    , height <| px 64
+                    , Css.left <| vw 25
+                    , zIndex <| int 1
+                    , after
+                        [ property "content" "''"
+                        , position fixed
+                        , backgroundColor col.bg
+                        , width <| vw 60
+                        , Css.left <| vw 25
+                        , height <| vh 30
+                        , top <| px 0
+                        ]
+                    ]
                 ]
-            ]
+                []
     in
         div [ css containerStyle ]
-            [ div [ css gradientStyle ] []
-            , div [ css contentStyle ] paragraphs
-            , div [ css <| borderStyle True ] []
-            , div [ css <| borderStyle False ] []
-            ]
+            [ shadower, content, border True, border False ]
 
 
 contentText : Route -> String

@@ -12,8 +12,8 @@ importNode =
 
 fonts : { arabic : String, body : String, heading : String }
 fonts =
-    { body = "Hind"
-    , heading = "Montserrat"
+    { body = "Work Sans"
+    , heading = "Raleway"
     , arabic = "Amiri"
     }
 

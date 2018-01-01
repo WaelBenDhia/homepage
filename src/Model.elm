@@ -2,18 +2,23 @@ module Model exposing (..)
 
 import Routing exposing (..)
 import Navigation exposing (..)
-import Animation exposing (Animation, animation)
+import Animation exposing (Animation, animation, animate)
 import Time exposing (Time)
 
 
 type alias Mdl =
     { route : Route
-    , interp : Float
-    , currentAnimation : Animation
+    , transition : Animation
     , clock : Time
     , target : Maybe Route
     , mousePosition : { x : Int, y : Int }
+    , mouseOver : Maybe ( Int, Int )
     }
+
+
+getInterp : Mdl -> Float
+getInterp { clock, transition } =
+    animate clock transition
 
 
 init : Location -> ( Mdl, Cmd msg )
@@ -24,10 +29,10 @@ init location =
     in
         ( Mdl
             page
-            0.2
             (animation 0)
-            1
+            0
             Nothing
             { x = -100, y = -100 }
+            Nothing
         , Cmd.none
         )

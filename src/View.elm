@@ -1,6 +1,6 @@
 module View exposing (view)
 
-import Model exposing (Mdl)
+import Model exposing (Mdl, getInterp)
 import Messages exposing (Msg)
 import Html.Styled exposing (Html, div)
 import Html.Styled.Attributes exposing (css)
@@ -14,13 +14,17 @@ import Pointer exposing (..)
 
 
 mainStyle : Mdl -> List Style
-mainStyle { route, interp } =
-    [ fontFamilies [ fonts.body ]
-    , backgroundColor (colors route).bg
-    , width <| calc (pct 100) minus (px <| 8 * interp)
-    , height <| pct 100
-    , borderLeft3 (px <| 8 * interp) solid (colors route).primary
-    ]
+mainStyle ({ route } as mdl) =
+    let
+        borderWidth =
+            px <| 8 * getInterp mdl
+    in
+        [ fontFamilies [ fonts.body ]
+        , backgroundColor (colors route).bg
+        , width <| calc (pct 100) minus borderWidth
+        , height <| pct 100
+        , borderLeft3 borderWidth solid (colors route).primary
+        ]
 
 
 view : Mdl -> Html Msg

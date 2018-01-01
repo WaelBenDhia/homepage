@@ -6,17 +6,8 @@ import Messages exposing (..)
 import Model exposing (..)
 import Navigation exposing (..)
 import Routing exposing (..)
-import Guards exposing (..)
 import Model exposing (Mdl)
-
-
--- import Mouse exposing (Signal)
--- import Signal exposing (..)
-
-
-doneClosing : Mdl -> Bool
-doneClosing { clock, currentAnimation } =
-    getTo currentAnimation == 0 && isDone clock currentAnimation
+import Maybe exposing (withDefault)
 
 
 simpleAnim : Float -> Float -> Time -> Animation
@@ -24,81 +15,59 @@ simpleAnim start end =
     animation >> from start >> to end >> duration (0.4 * second)
 
 
-closeAnim : Time -> Animation
-closeAnim =
-    simpleAnim 1 0
-
-
-openAnim : Time -> Animation
-openAnim =
-    simpleAnim 0 1
-
-
 handleLocation : Location -> Mdl -> ( Mdl, Cmd msg )
-handleLocation location model =
-    let
-        newTarget =
-            Just <| parseLocation location
-    in
-        ( { model
-            | target = newTarget
-            , currentAnimation = closeAnim model.clock
-          }
-        , Cmd.none
-        )
-
-
-unpack : Maybe a -> a -> a
-unpack val def =
-    case val of
-        Just v ->
-            v
-
-        _ ->
-            def
-
-
-handleTick : Float -> Mdl -> ( Mdl, Cmd msg )
-handleTick dt model =
-    ( { model
-        | clock = model.clock + dt
-        , interp = animate model.clock model.currentAnimation
-        , route =
-            (doneClosing model => unpack model.target model.route)
-                |= model.route
-        , target =
-            (doneClosing model => Nothing)
-                |= model.target
-        , currentAnimation =
-            isRunning model.clock model.currentAnimation
-                => model.currentAnimation
-                |= (doneClosing model => openAnim model.clock)
-                |= model.currentAnimation
+handleLocation location ({ clock } as mdl) =
+    ( { mdl
+        | target = Just <| parseLocation location
+        , transition = simpleAnim 1 0 clock
       }
     , Cmd.none
     )
 
 
+handleTick : Float -> Mdl -> ( Mdl, Cmd msg )
+handleTick dt ({ clock, transition, target, route } as mdl) =
+    let
+        closedThen val def =
+            if getTo transition == 0 && isDone clock transition then
+                val
+            else
+                def
+    in
+        ( { mdl
+            | clock = clock + dt
+            , route = closedThen (withDefault route target) route
+            , target = closedThen Nothing target
+            , transition = closedThen (simpleAnim 0 1 clock) transition
+          }
+        , Cmd.none
+        )
+
+
 handleRouteChange : Route -> Mdl -> ( Mdl, Cmd msg )
-handleRouteChange r model =
-    ( model
-    , (r /= model.route && Just r /= model.target)
-        => (newUrl <| routeToString r)
-        |= Cmd.none
+handleRouteChange r ({ route, target } as mdl) =
+    ( mdl
+    , if r /= route && Just r /= target then
+        newUrl <| routeToString r
+      else
+        Cmd.none
     )
 
 
 update : Msg -> Mdl -> ( Mdl, Cmd Msg )
-update msg model =
+update msg mdl =
     case msg of
         OnLocationChange location ->
-            handleLocation location model
+            handleLocation location mdl
 
         Tick dt ->
-            handleTick dt model
+            handleTick dt mdl
 
         GoTo r ->
-            handleRouteChange r model
+            handleRouteChange r mdl
 
         MouseMove pos ->
-            ( { model | mousePosition = pos }, Cmd.none )
+            ( { mdl | mousePosition = pos }, Cmd.none )
+
+        MouseOver offset ->
+            ( { mdl | mouseOver = offset }, Cmd.none )

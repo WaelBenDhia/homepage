@@ -6,10 +6,9 @@ import Fonts exposing (..)
 import Html.Styled exposing (..)
 import Html.Styled.Attributes exposing (class, css, type_)
 import Css exposing (..)
-import String exposing (..)
-import List exposing (..)
-import Guards exposing (..)
-import Model exposing (Mdl)
+import String exposing (length, slice)
+import List exposing (intersperse)
+import Model exposing (Mdl, getInterp)
 
 
 pageTitle : Route -> ( String, String )
@@ -42,10 +41,10 @@ zip xs ys =
 
 
 title : Mdl -> List (Html msg)
-title { route, interp } =
+title ({ route } as mdl) =
     let
         newLen =
-            String.length >> Basics.toFloat >> (*) interp >> Basics.round
+            Basics.round << (*) (getInterp mdl) << toFloat << length
 
         resize s =
             slice 0 (newLen s) s
@@ -55,10 +54,10 @@ title { route, interp } =
     in
         List.map
             (\( t, style, cStyle ) ->
-                div [ css cStyle ] [ span [ css style ] [ text t ] ]
+                div [ css cStyle ] [ span [ css <| style route ] [ text <| resize t ] ]
             )
-            [ ( resize titleEn, titleStyle route, titleContainerStyle route )
-            , ( resize titleAr, decoStyle route, decoContainerStyle )
+            [ ( titleEn, titleStyle, titleContainerStyle route )
+            , ( titleAr, decoStyle, decoContainerStyle )
             ]
 
 
