@@ -1,16 +1,16 @@
 module NavMenu exposing (..)
 
-import Html.Styled exposing (..)
-import Html.Styled.Events exposing (..)
-import Html.Styled.Attributes exposing (..)
-import Messages exposing (..)
 import Css exposing (..)
 import Fonts exposing (..)
-import Routing exposing (..)
+import Html.Styled exposing (..)
+import Html.Styled.Attributes exposing (..)
+import Html.Styled.Events exposing (..)
 import List
-import Theming exposing (..)
-import String exposing (slice, length)
+import Messages exposing (..)
 import Model exposing (Mdl, getInterp)
+import Routing exposing (..)
+import String exposing (length, slice)
+import Theming exposing (..)
 
 
 navMenu : Mdl -> Html Msg
@@ -26,14 +26,14 @@ navMenu ({ route, target } as mdl) =
             , zIndex <| int 2
             ]
     in
-        div [ css style ] <|
-            List.map
-                (toButton mdl)
-                [ ( About, "About", 82, ( 0, 90 ) )
-                , ( Education, "Education", 139, ( 1, 154 ) )
-                , ( Work, "Work", 82, ( 2, 86 ) )
-                , ( Skills, "Skills", 70, ( 3, 82 ) )
-                ]
+    div [ css style ] <|
+        List.map
+            (toButton mdl)
+            [ ( About, "About", 82, ( 0, 90 ) )
+            , ( Education, "Education", 139, ( 1, 154 ) )
+            , ( Work, "Work", 82, ( 2, 86 ) )
+            , ( Skills, "Skills", 70, ( 3, 82 ) )
+            ]
 
 
 toButton : Mdl -> ( Route, String, a, ( Int, Int ) ) -> Html Msg
@@ -107,18 +107,18 @@ toButton ({ route, target } as mdl) ( r, t, w, offset ) =
             , paddingLeft <| px 24
             ]
     in
-        a
-            [ css <|
-                baseStyle
-                    ++ (routeThen curStyle notCurStyle)
-            , onClick <| GoTo r
-            , onMouseEnter
-                (MouseOver <| routeThen Nothing (Just offset))
-            , onMouseLeave (MouseOver Nothing)
-            ]
-            [ text <|
-                if r == route || Just r == target then
-                    resize (r == route) t
-                else
-                    t
-            ]
+    a
+        [ css <|
+            baseStyle
+                ++ routeThen curStyle notCurStyle
+        , onClick <| GoTo r
+        , onMouseEnter
+            (MouseOver <| routeThen Nothing (Just offset))
+        , onMouseLeave (MouseOver Nothing)
+        ]
+        [ text <|
+            if r == route || Just r == target then
+                resize (r == route) t
+            else
+                t
+        ]

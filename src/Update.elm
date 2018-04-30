@@ -1,13 +1,12 @@
 module Update exposing (update)
 
-import Time exposing (..)
 import Animation exposing (..)
+import Maybe exposing (withDefault)
 import Messages exposing (..)
 import Model exposing (..)
 import Navigation exposing (..)
 import Routing exposing (..)
-import Model exposing (Mdl)
-import Maybe exposing (withDefault)
+import Time exposing (..)
 
 
 simpleAnim : Float -> Float -> Time -> Animation
@@ -34,14 +33,14 @@ handleTick dt ({ clock, transition, target, route } as mdl) =
             else
                 def
     in
-        ( { mdl
-            | clock = clock + dt
-            , route = closedThen (withDefault route target) route
-            , target = closedThen Nothing target
-            , transition = closedThen (simpleAnim 0 1 clock) transition
-          }
-        , Cmd.none
-        )
+    ( { mdl
+        | clock = clock + dt
+        , route = closedThen (withDefault route target) route
+        , target = closedThen Nothing target
+        , transition = closedThen (simpleAnim 0 1 clock) transition
+      }
+    , Cmd.none
+    )
 
 
 handleRouteChange : Route -> Mdl -> ( Mdl, Cmd msg )

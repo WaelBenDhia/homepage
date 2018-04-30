@@ -1,14 +1,14 @@
 module Title exposing (title)
 
-import Routing exposing (..)
-import Theming exposing (..)
+import Css exposing (..)
 import Fonts exposing (..)
 import Html.Styled exposing (..)
 import Html.Styled.Attributes exposing (class, css, type_)
-import Css exposing (..)
-import String exposing (length, slice)
 import List exposing (intersperse)
 import Model exposing (Mdl, getInterp)
+import Routing exposing (..)
+import String exposing (length, slice)
+import Theming exposing (..)
 
 
 title : Mdl -> List (Html msg)
@@ -18,7 +18,7 @@ title ({ route } as mdl) =
             colors route
 
         newLen =
-            length >> toFloat >> ((*) <| getInterp mdl) >> Basics.round
+            length >> toFloat >> (*) (getInterp mdl) >> Basics.round
 
         resize s =
             slice 0 (newLen s) s
@@ -84,8 +84,8 @@ title ({ route } as mdl) =
         transform ( t, style, cStyle ) =
             div [ css cStyle ] [ span [ css style ] [ text <| resize t ] ]
     in
-        List.map
-            transform
-            [ ( textEn, styleEn, containerEn )
-            , ( textAr, styleAr, containerAr )
-            ]
+    List.map
+        transform
+        [ ( textEn, styleEn, containerEn )
+        , ( textAr, styleAr, containerAr )
+        ]
