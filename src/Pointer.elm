@@ -13,15 +13,10 @@ pointerContainer : Mdl -> Html msg
 pointerContainer { mousePosition, route, mouseOver, target } =
     let
         size =
-            case mouseOver of
-                Nothing ->
-                    if target == Nothing then
-                        32
-                    else
-                        96
-
-                Just ( _, i ) ->
-                    sqrt (toFloat i ^ 2 + 48 ^ 2)
+            mouseOver
+                |> andThen (\( _, i ) -> Just <| sqrt (toFloat i ^ 2 + 48 ^ 2))
+                |> withDefault
+                    (target |> andThen (Just << always 96) |> withDefault 32)
 
         innerSize =
             if target == Nothing then

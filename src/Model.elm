@@ -1,8 +1,8 @@
 module Model exposing (..)
 
-import Routing exposing (..)
+import Animation exposing (Animation, animate, animation)
 import Navigation exposing (..)
-import Animation exposing (Animation, animation, animate)
+import Routing exposing (..)
 import Time exposing (Time)
 
 
@@ -23,16 +23,12 @@ getInterp { clock, transition } =
 
 init : Location -> ( Mdl, Cmd msg )
 init location =
-    let
-        page =
-            parseLocation location
-    in
-        ( Mdl
-            page
-            (animation 0)
-            0
-            Nothing
-            { x = -100, y = -100 }
-            Nothing
-        , Cmd.none
-        )
+    ( Mdl
+        (parseLocation location)
+        (animation 0)
+        0
+        Nothing
+        { x = -100, y = -100 }
+        Nothing
+    , Cmd.none
+    )

@@ -108,13 +108,10 @@ toButton ({ route, target } as mdl) ( r, t, w, offset ) =
             ]
     in
     a
-        [ css <|
-            baseStyle
-                ++ routeThen curStyle notCurStyle
+        [ css <| baseStyle ++ routeThen curStyle notCurStyle
         , onClick <| GoTo r
-        , onMouseEnter
-            (MouseOver <| routeThen Nothing (Just offset))
-        , onMouseLeave (MouseOver Nothing)
+        , onMouseEnter <| MouseOver <| routeThen Nothing <| Just offset
+        , onMouseLeave <| MouseOver Nothing
         ]
         [ text <|
             if r == route || Just r == target then

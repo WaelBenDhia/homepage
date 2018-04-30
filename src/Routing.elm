@@ -1,7 +1,8 @@
 module Routing exposing (..)
 
-import UrlParser exposing (..)
+import Maybe exposing (withDefault)
 import Navigation exposing (Location)
+import UrlParser exposing (..)
 
 
 type Route
@@ -42,9 +43,4 @@ parseLocation location =
                 , UrlParser.map Skills (UrlParser.s "skills")
                 ]
     in
-        case (parseHash matchers location) of
-            Just route ->
-                route
-
-            Nothing ->
-                NotFound
+    parseHash matchers location |> withDefault NotFound

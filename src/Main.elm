@@ -1,13 +1,13 @@
 module Main exposing (..)
 
+import AnimationFrame exposing (..)
+import Html.Styled exposing (..)
 import Messages exposing (..)
 import Model exposing (..)
-import Html.Styled exposing (..)
+import Mouse exposing (Position)
 import Navigation exposing (..)
-import AnimationFrame exposing (..)
 import Update exposing (update)
 import View exposing (view)
-import Mouse exposing (Position)
 
 
 subs : Mdl -> Sub Msg

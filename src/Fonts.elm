@@ -1,4 +1,4 @@
-module Fonts exposing (importNode, fonts)
+module Fonts exposing (fonts, importNode)
 
 import Html.Styled exposing (..)
 import Html.Styled.Attributes exposing (..)
@@ -25,4 +25,4 @@ importNode =
                 ++ format fonts.arabic
                 ++ "&subset=arabic');"
     in
-        node "style" [ type_ "text/css" ] [ text fontLink ]
+    node "style" [ type_ "text/css" ] [ text fontLink ]
