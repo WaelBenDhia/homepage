@@ -37,7 +37,7 @@ colors r =
 colorsStr : Route -> { bg : String, primary : String }
 colorsStr r =
     { primary =
-        (case r of
+        case r of
             About ->
                 "#f00"
 
@@ -52,7 +52,6 @@ colorsStr r =
 
             NotFound ->
                 "#dd7373"
-        )
     , bg = "#fff"
     }
 

@@ -82,10 +82,10 @@ title ({ route } as mdl) =
             ]
 
         transform ( t, style, cStyle ) =
-            div [ css cStyle ] [ span [ css style ] [ text <| resize t ] ]
+            div [ css cStyle ] <| [ span [ css style ] [ text <| resize t ] ]
     in
-    List.map
-        transform
-        [ ( textEn, styleEn, containerEn )
-        , ( textAr, styleAr, containerAr )
-        ]
+        List.map
+            transform
+            [ ( textEn, styleEn, containerEn )
+            , ( textAr, styleAr, containerAr )
+            ]

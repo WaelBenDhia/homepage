@@ -28,8 +28,27 @@ routeToString r =
         Skills ->
             "/#/skills"
 
-        _ ->
+        NotFound ->
             "/#/nowhere"
+
+
+routeToValue : Route -> a -> a -> a -> a -> a -> a
+routeToValue r vAbout vEducation vWork vSkills vNotFound =
+    case r of
+        About ->
+            vAbout
+
+        Education ->
+            vEducation
+
+        Work ->
+            vWork
+
+        Skills ->
+            vSkills
+
+        NotFound ->
+            vNotFound
 
 
 parseLocation : Location -> Route
@@ -43,4 +62,4 @@ parseLocation location =
                 , UrlParser.map Skills (UrlParser.s "skills")
                 ]
     in
-    parseHash matchers location |> withDefault NotFound
+        parseHash matchers location |> withDefault NotFound

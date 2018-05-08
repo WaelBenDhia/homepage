@@ -35,12 +35,12 @@ content ({ route } as mdl) =
                     "darken"
             ]
     in
-    div [ css style ]
-        [ shadower mdl
-        , contentDiv mdl
-        , contentBorder True mdl
-        , contentBorder False mdl
-        ]
+        div [ css style ]
+            [ shadower mdl
+            , contentDiv mdl
+            , contentBorder True mdl
+            , contentBorder False mdl
+            ]
 
 
 contentBorder : Bool -> Mdl -> Html msg
@@ -55,18 +55,18 @@ contentBorder vertical ({ route } as mdl) =
             else
                 def
     in
-    div
-        [ css
-            [ position fixed
-            , Css.right <| calc (pct 15) plus (px <| vertThen 16 48)
-            , top <| calc (vh 30) plus (px <| vertThen 48 16)
-            , vertThen (width <| px 8) (width <| vw 25)
-            , vertThen (height <| vh 25) (height <| px 8)
-            , backgroundColor col.primary
-            , zIndex <| int 2
+        div
+            [ css
+                [ position fixed
+                , Css.right <| calc (pct 15) plus (px <| vertThen 16 48)
+                , top <| calc (vh 30) plus (px <| vertThen 48 16)
+                , vertThen (width <| px 8) (width <| vw 25)
+                , vertThen (height <| vh 25) (height <| px 8)
+                , backgroundColor col.primary
+                , zIndex <| int 2
+                ]
             ]
-        ]
-        []
+            []
 
 
 shadower : Mdl -> Html msg
@@ -94,7 +94,7 @@ shadower ({ route } as mdl) =
                 ]
             ]
     in
-    div [ css style ] []
+        div [ css style ] []
 
 
 contentDiv : Mdl -> Html msg
@@ -114,8 +114,8 @@ contentDiv ({ route } as mdl) =
                 >> List.map (formatParagraph mdl)
                 >> (::) (div [ css [ height <| px 32 ] ] [])
     in
-    div [ css [ color col.fg, width <| pct 100, height <| pct 100 ] ]
-        (splitParagraphs <| resize <| contentText route)
+        div [ css [ color col.fg, width <| pct 100, height <| pct 100 ] ]
+            (splitParagraphs <| resize <| contentText route)
 
 
 formatParagraph : Mdl -> String -> Html msg
@@ -153,13 +153,9 @@ formatParagraph { route } thing =
                 [] ->
                     ( "", "" )
     in
-    p
-        [ css [ fontSize <| px 22, lineHeight <| px 32 ] ]
-        [ span
-            [ css firstLetterStyle ]
-            [ text fLet ]
-        , text pg
-        ]
+        p
+            [ css [ fontSize <| px 22, lineHeight <| px 32 ] ]
+            [ span [ css firstLetterStyle ] [ text fLet ], text pg ]
 
 
 contentText : Route -> String
