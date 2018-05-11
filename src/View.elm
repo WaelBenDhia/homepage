@@ -9,7 +9,7 @@ import Messages exposing (Msg)
 import Model exposing (Mdl, getInterp)
 import NavMenu exposing (navMenu)
 import Pointer exposing (..)
-import Theming exposing (colors)
+import Theming exposing (..)
 import Title exposing (title)
 
 
@@ -21,12 +21,12 @@ view ({ route } as mdl) =
                 borderWidth =
                     px <| 8 * getInterp mdl
             in
-            [ fontFamilies [ fonts.body ]
-            , backgroundColor (colors route).bg
-            , width <| calc (pct 100) minus borderWidth
-            , height <| pct 100
-            , borderLeft3 borderWidth solid (colors route).primary
-            ]
+                [ fontFamilies [ fonts.body ]
+                , backgroundColor (colors route).bg
+                , width <| calc (pct 100) minus borderWidth
+                , height <| pct 100
+                , borderLeft3 borderWidth solid (colors route).primary
+                ]
         ]
     <|
         pointerContainer mdl

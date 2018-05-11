@@ -1,6 +1,7 @@
 module Pointer exposing (pointerContainer)
 
 import Css exposing (..)
+import Css.Media as Media
 import Html.Styled exposing (..)
 import Html.Styled.Attributes exposing (..)
 import Maybe exposing (withDefault)
@@ -66,7 +67,8 @@ pointerContainer { mousePosition, route, mouseOver, target } =
             ]
             [ div
                 [ css <|
-                    [ backgroundColor (colors route).accent
+                    [ hideOnSmallScreen
+                    , backgroundColor (colors route).accent
                     , Css.property "pointer-events" "none"
                     ]
                         ++ pointerStyle size
@@ -74,7 +76,8 @@ pointerContainer { mousePosition, route, mouseOver, target } =
                 []
             , div
                 [ css <|
-                    [ backgroundColor (colors route).bg
+                    [ hideOnSmallScreen
+                    , backgroundColor (colors route).bg
                     , boxShadow4 (px 0) (px 0) (px 32) (colors route).primary
                     ]
                         ++ pointerStyle innerSize

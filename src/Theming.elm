@@ -1,9 +1,21 @@
 module Theming exposing (..)
 
 import Css exposing (..)
+import Css.Media as Media
 import String exposing (..)
 import Char exposing (..)
 import Routing exposing (..)
+
+
+hideOnSmallScreen : Style
+hideOnSmallScreen =
+    onSmallScreen [ display none ]
+
+
+onSmallScreen : List Style -> Style
+onSmallScreen =
+    Media.withMedia
+        [ Media.only Media.screen [ Media.maxWidth (px 600) ] ]
 
 
 colors : Route -> { accent : Color, bg : Color, fg : Color, primary : Color }

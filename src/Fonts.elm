@@ -25,4 +25,4 @@ importNode =
                 ++ format fonts.arabic
                 ++ "&subset=arabic');"
     in
-    node "style" [ type_ "text/css" ] [ text fontLink ]
+        node "style" [ type_ "text/css" ] [ text fontLink ]

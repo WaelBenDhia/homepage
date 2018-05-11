@@ -24,16 +24,17 @@ navMenu ({ route, target } as mdl) =
             , left <| px <| (8 * getInterp mdl) - 8
             , top <| calc (vh 50) minus (px 224)
             , zIndex <| int 2
+            , onSmallScreen [ backgroundColor (colors route).primary ]
             ]
     in
-    div [ css style ] <|
-        List.map
-            (toButton mdl)
-            [ ( About, "About", 82, ( 0, 90 ) )
-            , ( Education, "Education", 139, ( 1, 154 ) )
-            , ( Work, "Work", 82, ( 2, 86 ) )
-            , ( Skills, "Skills", 70, ( 3, 82 ) )
-            ]
+        div [ css style ] <|
+            List.map
+                (toButton mdl)
+                [ ( About, "About", 82, ( 0, 90 ) )
+                , ( Education, "Education", 139, ( 1, 154 ) )
+                , ( Work, "Work", 82, ( 2, 86 ) )
+                , ( Skills, "Skills", 70, ( 3, 82 ) )
+                ]
 
 
 toButton : Mdl -> ( Route, String, a, ( Int, Int ) ) -> Html Msg
@@ -107,15 +108,15 @@ toButton ({ route, target } as mdl) ( r, t, w, offset ) =
             , paddingLeft <| px 24
             ]
     in
-    a
-        [ css <| baseStyle ++ routeThen curStyle notCurStyle
-        , onClick <| GoTo r
-        , onMouseEnter <| MouseOver <| routeThen Nothing <| Just offset
-        , onMouseLeave <| MouseOver Nothing
-        ]
-        [ text <|
-            if r == route || Just r == target then
-                resize (r == route) t
-            else
-                t
-        ]
+        a
+            [ css <| baseStyle ++ routeThen curStyle notCurStyle
+            , onClick <| GoTo r
+            , onMouseEnter <| MouseOver <| routeThen Nothing <| Just offset
+            , onMouseLeave <| MouseOver Nothing
+            ]
+            [ text <|
+                if r == route || Just r == target then
+                    resize (r == route) t
+                else
+                    t
+            ]
